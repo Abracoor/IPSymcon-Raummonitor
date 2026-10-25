@@ -193,14 +193,54 @@ $data = RaummonitorModel::build(
     [['Group' => 'EG', 'Room' => 'Ohne Ist', 'ActualTempID' => 0]],
     [], [], $reader
 );
-check(count($data['configurationErrors']) > 0, true, 'Fehlende Pflichtzuordnung erkannt');
+check($data['configurationErrors'], [], 'Isttemperatur ist keine Pflichtzuordnung mehr');
+check($data['missingIDs'], [], 'Nicht zugeordnete Temperatur erzeugt keinen Datenfehler');
+check($data['totalRooms'], 1, 'Auch Raum ohne jeden Messwert bleibt sichtbar');
+check($data['columns']['actual'], false, 'Nicht genutzte Ist-Spalte automatisch ausgeblendet');
+
+// Räume mit reinem Licht-/Fensterstatus oder nur einem Navigationsziel.
+$otherRooms = [
+    ['Group' => 'EG', 'Room' => 'Licht', 'ActualTempID' => 0],
+    ['Group' => 'EG', 'Room' => 'Fenster', 'WindowID' => 16],
+    ['Group' => 'EG', 'Room' => 'Details', 'DetailCategoryID' => 12353]
+];
+$otherLights = [['Group' => 'EG', 'Room' => 'Licht', 'VariableID' => 6]];
+$data = RaummonitorModel::build($otherRooms, $otherLights, [], $reader);
+check($data['totalRooms'], 3, 'Licht-, Fenster- und Navigationsräume ohne Isttemperatur');
+check($data['configurationErrors'], [], 'Keine Pflichtfeldfehler bei alternativen Räumen');
+check($data['missingIDs'], [], 'Andere Räume erzeugen keine Isttemperatur-Messfehler');
+check($data['columns']['actual'], false, 'Ist-Spalte bleibt ohne Zuordnung verborgen');
+check($data['columns']['lights'], true, 'Lichtliste macht Lichtspalte ohne Isttemperatur sichtbar');
+check($data['columns']['window'], true, 'Fensterkontakt macht Fensterspalte ohne Isttemperatur sichtbar');
+check($data['groups'][0]['rooms'][0]['detailCategoryID'], 12353,
+    'Reiner Navigationsraum behält sein Ziel');
+
+$data = RaummonitorModel::build(
+    [['Group' => 'EG', 'Room' => 'Nur Soll', 'SetpointTempID' => 9]], [], [], $reader
+);
+check($data['columns']['actual'], false, 'Solltemperatur allein benötigt keine Ist-Spalte');
+check($data['columns']['setpoint'], true, 'Solltemperatur allein aktiviert ihre eigene Spalte');
+check($data['configurationErrors'], [], 'Nur Solltemperatur ist eine gültige Raumkonfiguration');
+
+$data = RaummonitorModel::build(
+    [['Group' => 'EG', 'Room' => 'Sensor fehlt', 'ActualTempID' => 999]], [], [], $reader
+);
+check($data['columns']['actual'], true, 'Konfigurierte, nicht lesbare Temperatur bleibt als Spalte sichtbar');
+check($data['missingIDs'], [999], 'Konfigurierte, nicht lesbare Temperatur bleibt Fehler');
+check($data['configurationErrors'], [], 'Fehlende Sensordaten sind kein Pflichtfeldfehler');
+
+$data = RaummonitorModel::build(
+    [['Group' => 'EG', 'Room' => 'Ohne Ist']], [], ['AutoColumns' => false], $reader
+);
+check($data['columns']['actual'], true, 'Manuelle Vollansicht zeigt auch ohne Zuordnung Ist');
 
 $data = RaummonitorModel::build($rooms, [], ['GroupRooms' => false], $reader);
 check(count($data['groups']), 1, 'Ohne Gruppen eine Gesamttabelle');
 
 $onlyActual = [['Group' => 'EG', 'Room' => 'Minimal', 'ActualTempID' => 1]];
 $data = RaummonitorModel::build($onlyActual, [], [], $reader);
-check(array_filter($data['columns']), [], 'Nur Pflichtdaten: alle optionalen Spalten ausgeblendet');
+check(array_filter($data['columns']), ['actual' => true],
+    'Nur Isttemperatur zugeordnet: alle anderen optionalen Spalten ausgeblendet');
 
 $data = RaummonitorModel::build($onlyActual, [], ['AutoColumns' => false], $reader);
 check($data['columns']['lights'], true, 'Manuelle Vollansicht zeigt Lichtspalte ohne Verknüpfung');

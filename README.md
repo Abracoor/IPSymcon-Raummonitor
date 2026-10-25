@@ -1,7 +1,7 @@
 # Raummonitor für IP-Symcon 9.x
 
-Ein eigenständiges Modul für eine moderne Kachelübersicht zu Heizung und
-Raumklima. Mehrere Räume lassen sich nach Etage oder beliebigen Gruppen
+Ein eigenständiges Modul für eine moderne Kachelübersicht zu Licht, Fenstern,
+Heizung und Raumklima. Mehrere Räume lassen sich nach Etage oder beliebigen Gruppen
 zusammenfassen. Geeignet für KNX-Anlagen, funktioniert aber ebenso mit
 beliebigen IP-Symcon-Variablen aus anderen Systemen.
 
@@ -17,7 +17,7 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
   Frostschutz.
 - Tabelle nach Raumname sortiert, optional nach Gruppen/Etagen gegliedert.
 - Je Raum: Isttemperatur, Solltemperatur, Lichtanzahl, Betriebsart,
-  Fensterzustand, Ventilstellung.
+  Fensterzustand, Ventilstellung. Nur der Raumname ist Pflicht.
 - Mehrere Fensterkontakte pro Raum mit Anzeige der geöffneten Kontakte.
 - Optionale Spalten automatisch ausblenden, wenn sie in keinem Raum konfiguriert sind.
 - Zusätzliche optionale Spalten: Luftfeuchte, CO₂, Taupunkt, Heizen/Kühlen.
@@ -53,7 +53,7 @@ angelegt und die Dateien dieses Pakets auf dem Hauptbranch `main` liegen.
 
 In der Instanz gibt es die Liste **„Räume und Messwerte“**. Mit dem
 **Hinzufügen**-Button eine Zeile je Raum anlegen. Die kompakte Liste zeigt nur
-Gruppe, Raumname und Isttemperatur. Beim Hinzufügen oder Bearbeiten öffnet sich
+Gruppe, Raumname und die optionale Isttemperatur. Beim Hinzufügen oder Bearbeiten öffnet sich
 ein Dialog mit allen Feldern; zusätzliche Werte sind in zwei aufklappbaren
 Bereichen untergebracht. So bleibt der Hinzufügen-Button auch bei normalem
 Browser-Zoom erreichbar.
@@ -62,7 +62,7 @@ Browser-Zoom erreichbar.
 | --- | --- | --- |
 | Gruppe / Etage | Nein | z. B. Erdgeschoss, Obergeschoss |
 | Raumname | **Ja** | z. B. Wohnzimmer; innerhalb einer Gruppe eindeutig |
-| Isttemperatur | **Ja** | Variable in Grad Celsius |
+| Isttemperatur | Nein | Variable in Grad Celsius |
 | Detailseite | Nein | Vorhandene Kategorie der Kachelvisualisierung als Klickziel für den Raumnamen |
 | Solltemperatur | Nein | Variable in Grad Celsius |
 | Betriebsart | Nein | Integerwert; KNX DPT 20.102 als Vorgabe 1–4 |
@@ -74,6 +74,10 @@ Browser-Zoom erreichbar.
 
 Die Liste kann direkt über die Benutzeroberfläche gepflegt werden; die
 numerischen IDs sind daher nicht von Hand in PHP-Dateien einzutragen.
+Auch Räume mit ausschließlich Licht-, Fenster- oder Klimawerten sind möglich.
+Ein Raum mit nur einem Namen und einer optionalen Detailseite ist ebenfalls
+zulässig; ohne Messwerte und ohne Detailseite bleibt lediglich der Raumname
+in der Tabelle sichtbar. Eine nicht zugeordnete Temperatur ist kein Fehler.
 
 ### Optionale Navigation zur Raum-Detailseite
 
@@ -207,7 +211,7 @@ ungeprüft in einer vorhandenen Symcon-Installation eingesetzt werden.
 Oberhalb stehen sechs Kennzahlen; wenn ein Raum den Automatikmodus verwendet,
 erscheint eine zusätzliche Kennzahl „Automatik“. Darunter folgt die nach Gruppe und Raumname
 sortierte Tabelle. **Standardmäßig ist die automatische Spaltenauswahl aktiv:**
-Raumname und Isttemperatur sind immer sichtbar. Solltemperatur, Licht,
+Nur der Raumname ist immer sichtbar. Isttemperatur, Solltemperatur, Licht,
 Betriebsart, Fenster und Ventil erscheinen nur, wenn mindestens ein Raum eine
 passende Variable verwendet. Die Spalten gelten einheitlich für alle Etagen;
 ein Raum ohne Zuordnung zeigt darin „–“.
@@ -219,7 +223,8 @@ die separate Freigabe **„Optionale Klima-Spalten anzeigen“**. Mit aktivierte
 Automatik erscheinen auch diese Zusatzspalten jeweils nur bei tatsächlicher
 Zuordnung.
 
-Nicht konfigurierte Werte erscheinen als „–“. Eine
+Nicht konfigurierte Werte erscheinen als „–“, falls die betreffende Spalte
+durch einen anderen Raum eingeblendet wird. Eine
 Warnmeldung in der Kachel und der Instanzstatus zeigen fehlende oder ungültige
 Messwerte an. Auf schmalen Kacheln ist die Tabelle horizontal scrollbar.
 
@@ -259,6 +264,7 @@ php tests/run.php
 php tests/module_smoke.php
 node tests/theme_test.js    # optionaler Test der Design-Erkennung
 node tests/navigation_test.js    # optionaler Test des Klickverhaltens
+node tests/columns_test.js    # optionaler Test der dynamischen Spalten
 ```
 
 Alle PHP-Dateien können zusätzlich mit `php -l` und alle JSON-Dateien mit
@@ -286,7 +292,8 @@ IPSymcon-Raummonitor/
     ├── run.php
     ├── module_smoke.php
     ├── theme_test.js
-    └── navigation_test.js
+    ├── navigation_test.js
+    └── columns_test.js
 ```
 
 ## Herkunft und Lizenz

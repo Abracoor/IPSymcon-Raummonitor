@@ -2,8 +2,10 @@
 
 ## Zielbild
 
-Eine Instanz des Raummonitors bündelt mehrere Räume. Jeder Raum hat mindestens
-einen Namen und einen Isttemperatur-Datenpunkt. Freie Gruppenbezeichnungen wie
+Eine Instanz des Raummonitors bündelt mehrere Räume. Jeder Raum benötigt nur
+einen eindeutigen Namen. Alle Messwerte sind optional; auch ein Raum mit
+ausschließlich Licht- oder Fensterstatus beziehungsweise einer Detailseite
+ist möglich. Freie Gruppenbezeichnungen wie
 „Erdgeschoss“ oder „Obergeschoss“ ordnen die Räume. Innerhalb jeder Gruppe wird
 alphabetisch nach Raumname sortiert.
 
@@ -27,8 +29,8 @@ alphabetisch nach Raumname sortiert.
 | --- | --- | --- |
 | `Group` | Nein | Freie Gruppenbezeichnung (Standard „Ohne Gruppe“) |
 | `Room` | Ja | Sichtbarer Raumname; in der Gruppe eindeutig |
-| `ActualTempID` | Ja | Aktuelle Temperatur in °C |
-| `DetailCategoryID` | Nein | Kategorie für einen optionalen Klick auf den Raumnamen, Standard `0` (inaktiv) |
+| `ActualTempID` | Nein | Aktuelle Temperatur in °C |
+| `DetailCategoryID` | Nein | Kategorie für einen optionalen Klick auf den Raumnamen, Standard `1` („Kein(e)“), auch früherer Wert `0` inaktiv |
 | `SetpointTempID` | Nein | Solltemperatur in °C |
 | `OperationModeID` | Nein | KNX DPT 20.102 standardmäßig 1/2/3/4 (Komfort/Standby/Nacht/Schutz), konfigurierbare Zuordnung; 0=Automatik wird erkannt, sofern nicht bereits individuell belegt |
 | `WindowID` | Nein | Bestehender Einzelkontakt als Bool/0/1; mit `WindowInverted` invertierbar |
@@ -58,11 +60,11 @@ ermittelt je optionaler Spalte, ob in mindestens einer gültigen Raumzeile
 eine passende Variablen-ID oder eine passende Licht-/Fensterlisten-Zuordnung
 existiert. Das Ergebnis ist eine **globale** Spaltenmaske für alle Gruppen.
 
-- `Raum` und `Ist` erscheinen immer.
-- `Soll`, `Licht`, `Modus`, `Fenster` und `Ventil` nur bei Konfiguration.
+- Nur `Raum` erscheint immer.
+- `Ist`, `Soll`, `Licht`, `Modus`, `Fenster` und `Ventil` nur bei Konfiguration.
 - Klima-Zusatzspalten werden zusätzlich von `ShowExtraColumns` gesteuert:
   Auch bei aktivierter Automatik bleiben sie ohne Freigabe verborgen.
-- Bei deaktiviertem `AutoColumns` werden alle fünf optionalen Basisspalten
+- Bei deaktiviertem `AutoColumns` werden alle sechs optionalen Basisspalten
   wie in den bisherigen Builds angezeigt (Zusatzspalten weiter optional).
 - Eine konfigurierte, aktuell aber fehlende Variable hält die Spalte sichtbar,
   sodass ein Messwertfehler nicht unsichtbar wird.
@@ -72,11 +74,11 @@ Mindestbreite richtet sich nach der Anzahl und Art der sichtbaren Spalten.
 
 ## Optionale Navigation
 
-Eine Raumzeile kann zusätzlich `DetailCategoryID` enthalten. Nur eine positive,
-konfigurierte Kategorie-ID aktiviert in der HTML-Kachel einen anklickbaren
+Eine Raumzeile kann zusätzlich `DetailCategoryID` enthalten. Nur eine gültige,
+konfigurierte Kategorie-ID größer als `1` aktiviert in der HTML-Kachel einen anklickbaren
 Raumnamen. Die Navigation nutzt `openObject(KategorieID)` aus dem offiziellen
 Symcon HTML-SDK (seit 8.2) und bleibt innerhalb der aktuellen Visualisierung.
-Ein nicht konfiguriertes Ziel (`0` oder fehlendes Feld) wird als normaler Text
+Ein nicht konfiguriertes Ziel (`1`, früher `0` oder fehlendes Feld) wird als normaler Text
 gerendert. Der Raummonitor ändert durch diese Funktion keine KNX- oder
 anderen Prozessvariablen; bestehende JSON-Raumlisten bleiben kompatibel.
 
@@ -116,7 +118,8 @@ Räume einer Instanz. Andere Messwerttypen werden davon nicht beeinflusst.
 
 ## Betriebs- und Fehlerverhalten
 
-- `IS_ACTIVE (102)`: konfigurierte Räume mit gültigen Messwerten.
+- `IS_ACTIVE (102)`: konfigurierte Räume ohne Daten- oder Konfigurationsfehler
+  (auch reine Navigationsräume ohne Messwert sind zulässig).
 - `IS_INACTIVE (104)`: keine Räume vorhanden.
 - `201`: fehlerhafte Konfiguration, doppelte Namen, nicht eindeutiges Modusmapping
   oder ungültige Temperaturgrenzen bei aktiver Prüfung.

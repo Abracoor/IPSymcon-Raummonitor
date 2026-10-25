@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.16 – Alle Messwerte optional, nur Raumname erforderlich (25.10.2026)
+
+- Die Isttemperatur ist kein Pflichtfeld mehr. Licht-, Fenster-, Klima- oder
+  reine Navigationsräume funktionieren ohne Temperaturvariable.
+- Die Spalte „Ist“ folgt nun derselben automatischen Spaltenlogik wie die
+  übrigen Messwerte und wird ohne Zuordnung ausgeblendet.
+- Eine bewusst nicht zugeordnete Isttemperatur erzeugt keinen Fehlerstatus;
+  fehlende oder ungültige Werte einer konfigurierten Variablen bleiben Fehler.
+- Die manuelle Vollansicht zeigt weiterhin alle Basisspalten. Vorhandene
+  Konfigurationen, KNX-Datenpunkte und Detailseiten bleiben unverändert.
+- Konfigurator, Dokumentation und automatisierte Tests angepasst.
+
 ## 1.0.15 – Leere Detailseiten-Auswahl korrigiert (25.10.2026)
 
 - Symcon verwendet Objekt-ID `1` für „Kein(e)“; ID `0` bezeichnet das

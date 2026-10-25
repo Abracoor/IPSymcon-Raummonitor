@@ -84,7 +84,7 @@
 </style>
 <div class="rm-root" id="rm-root">
     <div class="rm-content">
-        <div class="rm-head"><strong>Raummonitor</strong><small>Raumklima · Heizung · Fenster</small></div>
+        <div class="rm-head"><strong>Raummonitor</strong><small>Räume · Klima · Licht · Fenster</small></div>
         <div class="rm-stats" id="rm-stats" aria-label="Zusammenfassung"></div>
         <div id="rm-warning" class="rm-warning" hidden></div>
         <div id="rm-groups"></div>
@@ -202,7 +202,7 @@
     function rmVisibleColumns(data) {
         const definitions = [
             {key: 'name', label: 'Raum', width: 140, required: true},
-            {key: 'actual', label: 'Ist', width: 82, required: true},
+            {key: 'actual', label: 'Ist', width: 82},
             {key: 'setpoint', label: 'Soll', width: 82},
             {key: 'lights', label: 'Licht', width: 67},
             {key: 'mode', label: 'Modus', width: 108},

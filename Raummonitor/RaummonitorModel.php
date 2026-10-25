@@ -56,7 +56,7 @@ final class RaummonitorModel
         // Spalten gelten global für alle Gruppen. Ihre Sichtbarkeit hängt
         // von der Zuordnung einer ID ab, nicht von ihrem aktuellen Messwert.
         $columns = array_fill_keys([
-            'setpoint', 'lights', 'mode', 'window', 'valve',
+            'actual', 'setpoint', 'lights', 'mode', 'window', 'valve',
             'humidity', 'co2', 'dewPoint', 'heatingCooling'
         ], false);
 
@@ -161,8 +161,10 @@ final class RaummonitorModel
             }
             $seenRooms[$key] = true;
             $tempID = (int) ($room['ActualTempID'] ?? 0);
-            if ($tempID <= 0) {
-                $configErrors[] = 'Raum ' . $name . ': Isttemperatur fehlt';
+            if ($tempID > 0) {
+                // Eine konfigurierte, aber ungültige Isttemperatur bleibt
+                // sichtbar/diagnostizierbar; ohne Zuordnung kein Fehler.
+                $columns['actual'] = true;
             }
 
             $actual = self::number($valueOf($tempID));
@@ -367,8 +369,8 @@ final class RaummonitorModel
             $grouped = [['name' => '', 'rooms' => $all]];
         }
 
-        // Manuell vollständig: Raum und Ist sind ohnehin immer sichtbar,
-        // weitere Basisspalten werden eingeblendet. Extras erfordern auch
+        // Manuell vollständig: Nur der Raumname ist immer sichtbar;
+        // sämtliche Basisspalten werden eingeblendet. Extras erfordern auch
         // weiterhin die separate Freigabe durch ShowExtraColumns.
         $extras = ['humidity', 'co2', 'dewPoint', 'heatingCooling'];
         if (!(bool) ($options['AutoColumns'] ?? true)) {

@@ -129,6 +129,23 @@ $instance->MessageSink(time(), 11, VM_UPDATE, []);
 verify($instance->status === 102, 'KNX-Automatik ist gültig und hebt den Fehlerstatus auf');
 verify($instance->GetSnapshot()['modeCounts']['auto'] === 1, 'Automatik-Modus in der Instanzauswertung erkannt');
 
+// Auch ein Raum mit ausschließlich einer Detailseite muss ohne Temperatur
+// vollständig aktiv bleiben und keine Variablen-Referenzen benötigen.
+$navigationOnly = new Raummonitor();
+$navigationOnly->properties['Rooms'] = json_encode([
+    ['Group' => 'EG', 'Room' => 'Navigation', 'DetailCategoryID' => 12353]
+]);
+$navigationOnly->ApplyChanges();
+verify($navigationOnly->status === IS_ACTIVE, 'Navigationsraum ohne Isttemperatur ist aktiv');
+verify($navigationOnly->GetSnapshot()['columns']['actual'] === false,
+    'Instanz blendet ungenutzte Ist-Spalte aus');
+verify($navigationOnly->GetSnapshot()['configurationErrors'] === [],
+    'Reiner Navigationsraum hat keinen Konfigurationsfehler');
+verify($navigationOnly->GetSnapshot()['missingIDs'] === [],
+    'Reiner Navigationsraum hat keinen fehlenden Sensorwert');
+verify(count($navigationOnly->references) === 0,
+    'Reiner Navigationsraum registriert keine Sensorreferenzen');
+
 $GLOBALS['testValues'][10] = 32767;
 $instance->MessageSink(time(), 10, VM_UPDATE, []);
 verify($instance->status === 202, 'Unplausible Temperatur führt zu Fehlerstatus');

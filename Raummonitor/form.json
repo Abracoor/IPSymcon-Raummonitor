@@ -2,7 +2,7 @@
     "elements": [
         {
             "type": "Label",
-            "caption": "Raummonitor – beliebige Symcon-Variablen, keine KNX-Herstellerbindung. Raumname und Isttemperatur sind Pflicht; alle anderen Zuordnungen sind optional."
+            "caption": "Raummonitor – beliebige Symcon-Variablen, keine KNX-Herstellerbindung. Nur der Raumname ist Pflicht; alle Messwerte und die Detailseite sind optional."
         },
         {
             "type": "List",
@@ -15,7 +15,7 @@
             "columns": [
                 {"name": "Group", "caption": "Gruppe / Etage", "width": "150px", "add": "", "edit": {"type": "ValidationTextBox"}},
                 {"name": "Room", "caption": "Raumname *", "width": "auto", "add": "", "edit": {"type": "ValidationTextBox"}},
-                {"name": "ActualTempID", "caption": "Isttemperatur *", "width": "240px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "ActualTempID", "caption": "Isttemperatur", "width": "240px", "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "DetailCategoryID", "visible": false, "add": 1, "edit": {"type": "SelectCategory"}},
                 {"name": "SetpointTempID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "OperationModeID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
@@ -30,10 +30,10 @@
                 {"name": "HeatingCoolingID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}}
             ],
             "form": [
-                {"type": "Label", "caption": "Pflichtangaben und Etage"},
+                {"type": "Label", "caption": "Raumname (Pflicht); Etage und sämtliche Messwerte sind optional"},
                 {"type": "ValidationTextBox", "name": "Group", "caption": "Gruppe / Etage (optional)"},
                 {"type": "ValidationTextBox", "name": "Room", "caption": "Raumname *"},
-                {"type": "SelectVariable", "name": "ActualTempID", "caption": "Isttemperatur *"},
+                {"type": "SelectVariable", "name": "ActualTempID", "caption": "Isttemperatur (optional)"},
                 {
                     "type": "ExpansionPanel",
                     "caption": "Navigation zur Detailseite (optional)",
@@ -73,7 +73,7 @@
         },
         {
             "type": "Label",
-            "caption": "Lichter: Pro Leuchte eine Zeile in der zweiten Liste eintragen; Gruppe und Raum müssen exakt einer Zeile oben entsprechen. Eine vorhandene Lichtanzahl-Variable im Raum hat Vorrang."
+            "caption": "Auch reine Licht-, Fenster- oder Navigationsräume sind möglich. Ein Raum ohne Variablen und ohne Detailseite wird nur mit Namen angezeigt. Lichter: Pro Leuchte eine Zeile in der zweiten Liste eintragen; Gruppe und Raum müssen exakt einer Zeile oben entsprechen. Eine vorhandene Lichtanzahl-Variable im Raum hat Vorrang."
         },
         {
             "type": "List",
