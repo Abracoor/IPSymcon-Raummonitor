@@ -4,6 +4,7 @@
             "Group": "Erdgeschoss",
             "Room": "Wohnzimmer",
             "ActualTempID": 12345,
+            "DetailCategoryID": 12353,
             "SetpointTempID": 12346,
             "OperationModeID": 12347,
             "WindowID": 12348,
@@ -24,5 +25,5 @@
     "Windows": [
         {"Group": "Erdgeschoss", "Room": "Wohnzimmer", "Name": "Fenster rechts", "VariableID": 12352, "Invert": false}
     ],
-    "Note": "Nur Dokumentation: Alle IDs sind fiktiv und vor Verwendung durch echte Symcon-Variablen-IDs zu ersetzen."
+    "Note": "Nur Dokumentation: Alle IDs sind fiktiv und vor Verwendung durch echte Symcon-Objekt-IDs zu ersetzen. DetailCategoryID muss die ID einer bestehenden Kategorie sein."
 }

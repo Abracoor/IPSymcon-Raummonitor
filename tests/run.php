@@ -25,7 +25,7 @@ $rooms = [
     [
         'Group' => 'EG', 'Room' => 'Wohnzimmer', 'ActualTempID' => 1,
         'SetpointTempID' => 2, 'OperationModeID' => 3, 'WindowID' => 4,
-        'ValveID' => 5, 'HumidityID' => 18, 'CO2ID' => 19,
+        'ValveID' => 5, 'DetailCategoryID' => 12353, 'HumidityID' => 18, 'CO2ID' => 19,
         'DewPointID' => 20, 'HeatingCoolingID' => 21
     ],
     [
@@ -68,6 +68,8 @@ check($data['groups'][0]['rooms'][0]['name'], 'Bad', 'Alphabetisch innerhalb EG'
 check($data['groups'][0]['rooms'][1]['lights'], 1, 'Lichtanzahl aus zwei Bool-Variablen');
 check($data['groups'][1]['rooms'][0]['valve'], 50.0, 'Ventil-Rohwert 0–255 umgerechnet');
 check($data['groups'][0]['rooms'][1]['heatingCooling'], 'Kühlen', 'Heizen/Kühlen');
+check($data['groups'][0]['rooms'][1]['detailCategoryID'], 12353, 'Optionale Detailkategorie wird übernommen');
+check($data['groups'][0]['rooms'][0]['detailCategoryID'], 0, 'Alter Raum ohne Detailseite bleibt ohne Navigation');
 check($data['missingIDs'], [], 'Alle Werte verfügbar');
 check($reads, count(RaummonitorModel::configuredIDs($rooms, $lights)), 'Jede referenzierte Variable genau einmal gelesen');
 

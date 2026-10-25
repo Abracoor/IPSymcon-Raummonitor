@@ -63,6 +63,7 @@ Browser-Zoom erreichbar.
 | Gruppe / Etage | Nein | z. B. Erdgeschoss, Obergeschoss |
 | Raumname | **Ja** | z. B. Wohnzimmer; innerhalb einer Gruppe eindeutig |
 | Isttemperatur | **Ja** | Variable in Grad Celsius |
+| Detailseite | Nein | Vorhandene Kategorie der Kachelvisualisierung als Klickziel für den Raumnamen |
 | Solltemperatur | Nein | Variable in Grad Celsius |
 | Betriebsart | Nein | Integerwert; KNX DPT 20.102 als Vorgabe 1–4 |
 | Fensterkontakt | Nein | Optionaler Einzelkontakt; zusätzliche Kontakte in der Fensterliste |
@@ -73,6 +74,26 @@ Browser-Zoom erreichbar.
 
 Die Liste kann direkt über die Benutzeroberfläche gepflegt werden; die
 numerischen IDs sind daher nicht von Hand in PHP-Dateien einzutragen.
+
+### Optionale Navigation zur Raum-Detailseite
+
+Im Bearbeitungsdialog eines Raums befindet sich der Bereich **„Navigation zur
+Detailseite (optional)“**. Dort kann eine bereits vorhandene IP-Symcon-Kategorie
+als **Detailseite** ausgewählt werden. Die Kategorie sollte innerhalb der
+verwendeten Kachelvisualisierung erreichbar sein.
+
+- **Mit Zielkategorie:** Der Raumname wird als anklickbarer, farblich
+  gekennzeichneter Button dargestellt. Ein Klick öffnet die Kategorie in
+  derselben Kachelvisualisierung.
+- **Ohne Zielkategorie (Standard):** Der Raumname bleibt normaler Text;
+  es findet keine Navigation statt.
+- Bereits gespeicherte Räume benötigen keine Anpassung. Die neuen Ziele
+  werden ausschließlich auf ausdrückliche Auswahl hin verwendet.
+
+Die Navigation verwendet die offizielle HTML-SDK-Funktion
+[`openObject()`](https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/html-sdk/openobject/)
+(seit Symcon 8.2), keine WebFront-Funktionen. Ob die Zielkategorie in einer
+bestimmten Visualisierung sichtbar und erreichbar ist, muss dort geprüft werden.
 
 ### Lichtanzahl
 
@@ -228,6 +249,7 @@ keinen laufenden Symcon-Server:
 php tests/run.php
 php tests/module_smoke.php
 node tests/theme_test.js    # optionaler Test der Design-Erkennung
+node tests/navigation_test.js    # optionaler Test des Klickverhaltens
 ```
 
 Alle PHP-Dateien können zusätzlich mit `php -l` und alle JSON-Dateien mit
@@ -254,7 +276,8 @@ IPSymcon-Raummonitor/
 └── tests/
     ├── run.php
     ├── module_smoke.php
-    └── theme_test.js
+    ├── theme_test.js
+    └── navigation_test.js
 ```
 
 ## Herkunft und Lizenz

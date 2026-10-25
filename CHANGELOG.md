@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.13 – Klick auf Raumnamen zur Detailseite (25.10.2026)
+
+- Pro Raum kann optional eine Zielkategorie für eine vorhandene Detailseite
+  in der Kachelvisualisierung hinterlegt werden.
+- Nur konfigurierte Raumnamen werden als anklickbare Buttons angezeigt;
+  der Seitenwechsel erfolgt über die offizielle HTML-SDK-Funktion `openObject()`.
+- Räume ohne Detailseite bleiben unverändert. Keine Änderung an KNX-Daten,
+  Messwertberechnung oder bestehenden Konfigurationen.
+- Modell-, Modul- und JavaScript-Tests für die optionale Navigation ergänzt.
+
 ## 1.0.12 – Getrennte Farbpaletten für helles und dunkles Design (25.10.2026)
 
 - Im hellen Symcon-Design wieder die kräftigen Originalfarben aus Build 10.

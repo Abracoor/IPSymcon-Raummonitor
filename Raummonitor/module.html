@@ -57,6 +57,9 @@
        Eine fixierte erste Spalte mit halbtransparentem Hintergrund führte
        beim Verschieben zu überlagerten Raum- und Messwerttexten. */
     .rm-table td:first-child { font-weight: 600; }
+    .rm-room-link { color: var(--rm-blue); background: none; border: 0; border-bottom: 1px dotted currentColor; border-radius: 0; padding: 0; font: inherit; font-weight: inherit; cursor: pointer; }
+    .rm-room-link:hover { text-decoration: underline; }
+    .rm-room-link:focus-visible { outline: 2px solid var(--rm-blue); outline-offset: 3px; }
     .rm-value { font-variant-numeric: tabular-nums; }
     .rm-dash { color: var(--rm-subtle); }
     .rm-pill { display: inline-block; border-radius: 999px; border: 1px solid transparent; padding: .22rem .52rem; line-height: 1.35; font-size: .91em; font-weight: 650; }
@@ -144,6 +147,24 @@
         return cell;
     }
 
+    function rmRoomName(room) {
+        const name = room.name || '–';
+        const categoryID = room.detailCategoryID;
+        // Ohne konfigurierte Detailseite bleibt der Raumname reiner Text.
+        if (!Number.isSafeInteger(categoryID) || categoryID <= 0) return name;
+
+        const button = rmNode('button', 'rm-room-link', name);
+        button.type = 'button';
+        button.title = 'Detailseite öffnen: ' + name;
+        button.setAttribute('aria-label', button.title);
+        button.addEventListener('click', () => {
+            // Offizielles Symcon HTML-SDK (ab 8.2): Kategorie in derselben
+            // Kachelvisualisierung öffnen. Kein PHP- oder WebFront-Aufruf.
+            if (typeof openObject === 'function') openObject(categoryID);
+        });
+        return button;
+    }
+
     function rmValve(percent) {
         if (typeof percent !== 'number' || !Number.isFinite(percent)) return rmNode('span', 'rm-dash', '–');
         const wrapper = rmNode('div', 'rm-valve');
@@ -200,7 +221,7 @@
 
     function rmRoomValue(room, key) {
         switch (key) {
-            case 'name': return room.name || '–';
+            case 'name': return rmRoomName(room);
             case 'actual': return rmNumber(room.actual, 1, ' °C');
             case 'setpoint': return rmNumber(room.setpoint, 1, ' °C');
             case 'lights': {

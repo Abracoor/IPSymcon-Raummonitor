@@ -72,7 +72,7 @@ $instance = new Raummonitor();
 $instance->properties['Rooms'] = json_encode([
     [
         'Group' => 'EG', 'Room' => '<script>alert(1)</script>', 'ActualTempID' => 10,
-        'OperationModeID' => 11, 'WindowID' => 12
+        'OperationModeID' => 11, 'WindowID' => 12, 'DetailCategoryID' => 12353
     ]
 ]);
 $instance->properties['Windows'] = json_encode([
@@ -83,6 +83,8 @@ $instance->ApplyChanges();
 verify($instance->status === 102, 'Instanzstatus ist aktiv');
 verify($instance->GetSnapshot()['modeCounts']['comfort'] === 1, 'DPT 20.102: 1 = Komfort auch in Modulvoreinstellung');
 verify($instance->GetSnapshot()['openWindows'] === 2, 'Fenster aus Einzelzuordnung und neuer Liste zusammengefasst');
+verify($instance->GetSnapshot()['groups'][0]['rooms'][0]['detailCategoryID'] === 12353,
+    'Optionale Detailkategorie erscheint im Modellsnapshot');
 verify($instance->properties['AutoColumns'] === true, 'Spaltenautomatik ist standardmäßig aktiviert');
 verify($instance->properties['ValidateTemperatures'] === true, 'Temperaturprüfung standardmäßig aktiviert');
 verify($instance->properties['MinimumTemperature'] === -20.0, 'Temperatur-Untergrenze standardmäßig minus 20 Grad');
@@ -97,6 +99,8 @@ $html = $instance->GetVisualizationTile();
 verify(str_contains($html, 'function handleMessage('), 'HTML-SDK Nachrichtenfunktion vorhanden');
 verify(!str_contains($html, '<script>alert(1)</script>'), 'Raumname kann kein Script einschleusen');
 verify(str_contains($html, '\\u003Cscript\\u003E'), 'HTML-Tag wird im JSON geschützt');
+verify(str_contains($html, 'openObject(categoryID)'), 'Offizielle HTML-SDK-Navigation in der Kachel enthalten');
+verify(str_contains($html, '"detailCategoryID":12353'), 'Detailkategorie in der Kachel-Payload vorhanden');
 verify(str_contains($html, 'overflow-x: auto'), 'Tabelle bleibt horizontal scrollbar');
 verify(!str_contains($html, 'position: sticky'), 'Keine überlagernde fixe Raumspalte bei schmalen Kacheln');
 verify(str_contains($html, '--rm-green: #207c4c'),

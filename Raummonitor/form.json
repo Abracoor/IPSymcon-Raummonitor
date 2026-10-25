@@ -16,6 +16,7 @@
                 {"name": "Group", "caption": "Gruppe / Etage", "width": "150px", "add": "", "edit": {"type": "ValidationTextBox"}},
                 {"name": "Room", "caption": "Raumname *", "width": "auto", "add": "", "edit": {"type": "ValidationTextBox"}},
                 {"name": "ActualTempID", "caption": "Isttemperatur *", "width": "240px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "DetailCategoryID", "visible": false, "add": 0, "edit": {"type": "SelectCategory"}},
                 {"name": "SetpointTempID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "OperationModeID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "WindowID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
@@ -33,6 +34,15 @@
                 {"type": "ValidationTextBox", "name": "Group", "caption": "Gruppe / Etage (optional)"},
                 {"type": "ValidationTextBox", "name": "Room", "caption": "Raumname *"},
                 {"type": "SelectVariable", "name": "ActualTempID", "caption": "Isttemperatur *"},
+                {
+                    "type": "ExpansionPanel",
+                    "caption": "Navigation zur Detailseite (optional)",
+                    "expanded": false,
+                    "items": [
+                        {"type": "SelectCategory", "name": "DetailCategoryID", "caption": "Detailseite"},
+                        {"type": "Label", "caption": "Optional: Vorhandene Kategorie der Kachelvisualisierung auswählen. Nur dann wird der Raumname anklickbar. Ohne Auswahl bleibt die bisherige Darstellung unverändert."}
+                    ]
+                },
                 {
                     "type": "ExpansionPanel",
                     "caption": "Heizung, Fenster und Licht (optional)",

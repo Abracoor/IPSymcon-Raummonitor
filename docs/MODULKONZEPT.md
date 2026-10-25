@@ -28,6 +28,7 @@ alphabetisch nach Raumname sortiert.
 | `Group` | Nein | Freie Gruppenbezeichnung (Standard „Ohne Gruppe“) |
 | `Room` | Ja | Sichtbarer Raumname; in der Gruppe eindeutig |
 | `ActualTempID` | Ja | Aktuelle Temperatur in °C |
+| `DetailCategoryID` | Nein | Kategorie für einen optionalen Klick auf den Raumnamen, Standard `0` (inaktiv) |
 | `SetpointTempID` | Nein | Solltemperatur in °C |
 | `OperationModeID` | Nein | KNX DPT 20.102 standardmäßig 1/2/3/4 (Komfort/Standby/Nacht/Schutz), konfigurierbare Zuordnung; 0=Automatik wird erkannt, sofern nicht bereits individuell belegt |
 | `WindowID` | Nein | Bestehender Einzelkontakt als Bool/0/1; mit `WindowInverted` invertierbar |
@@ -68,6 +69,16 @@ existiert. Das Ergebnis ist eine **globale** Spaltenmaske für alle Gruppen.
 
 Die HTML-Kachel erhält dieselbe Spaltenmaske für sämtliche Etagen. Ihre
 Mindestbreite richtet sich nach der Anzahl und Art der sichtbaren Spalten.
+
+## Optionale Navigation
+
+Eine Raumzeile kann zusätzlich `DetailCategoryID` enthalten. Nur eine positive,
+konfigurierte Kategorie-ID aktiviert in der HTML-Kachel einen anklickbaren
+Raumnamen. Die Navigation nutzt `openObject(KategorieID)` aus dem offiziellen
+Symcon HTML-SDK (seit 8.2) und bleibt innerhalb der aktuellen Visualisierung.
+Ein nicht konfiguriertes Ziel (`0` oder fehlendes Feld) wird als normaler Text
+gerendert. Der Raummonitor ändert durch diese Funktion keine KNX- oder
+anderen Prozessvariablen; bestehende JSON-Raumlisten bleiben kompatibel.
 
 ## Farbkonzept
 

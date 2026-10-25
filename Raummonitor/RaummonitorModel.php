@@ -310,6 +310,9 @@ final class RaummonitorModel
             $groups[$group][] = [
                 'name' => $name,
                 'group' => $group,
+                // Optionales Navigationsziel (Symcon-Kategorie); keine Sensor-ID.
+                // Alte Raumkonfigurationen ohne dieses Feld bleiben kompatibel.
+                'detailCategoryID' => max(0, (int) ($room['DetailCategoryID'] ?? 0)),
                 'actual' => $actual,
                 'setpoint' => $setpoint,
                 'lights' => $lightCount,
