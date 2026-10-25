@@ -8,6 +8,10 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
 **Entwickler/GitHub:** [Abracoor](https://github.com/Abracoor)  
 **Repository:** `https://github.com/Abracoor/IPSymcon-Raummonitor`
 
+**Aktueller Stand:** Build 16. Die Kernfunktionen wurden in IP-Symcon 9.x
+praktisch getestet (Raumkonfigurationen ohne Temperatur, Licht, Fenster,
+Ist-/Solltemperatur und automatische Spaltenanpassung).
+
 ## Funktionen
 
 - Responsive HTML-SDK-Kachel mit heller und dunkler Symcon-Darstellung.
@@ -46,17 +50,13 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
 5. Gruppen und Räume konfigurieren und die Instanz übernehmen.
 6. Die Instanz in der **Kachelvisualisierung** sichtbar machen.
 
-**Hinweis:** Die URL funktioniert erst, nachdem das Repository auf GitHub
-angelegt und die Dateien dieses Pakets auf dem Hauptbranch `main` liegen.
-
 ## Konfiguration der Räume
 
 In der Instanz gibt es die Liste **„Räume und Messwerte“**. Mit dem
 **Hinzufügen**-Button eine Zeile je Raum anlegen. Die kompakte Liste zeigt nur
-Gruppe, Raumname und die optionale Isttemperatur. Beim Hinzufügen oder Bearbeiten öffnet sich
-ein Dialog mit allen Feldern; zusätzliche Werte sind in zwei aufklappbaren
-Bereichen untergebracht. So bleibt der Hinzufügen-Button auch bei normalem
-Browser-Zoom erreichbar.
+Gruppe, Raumname und die optionale Isttemperatur. Beim Hinzufügen oder
+Bearbeiten öffnet sich ein Dialog mit allen Feldern; weitere Angaben sind
+in aufklappbaren Bereichen untergebracht.
 
 | Feld | Erforderlich | Verwendung |
 | --- | --- | --- |
@@ -91,17 +91,7 @@ verwendeten Kachelvisualisierung erreichbar sein.
   derselben Kachelvisualisierung.
 - **Ohne Zielkategorie (Standard):** Der Raumname bleibt normaler Text;
   es findet keine Navigation statt. Im Auswahlfeld steht **„Kein(e)“**.
-  Die Anzeige **„IP Symcon“** bezeichnet dagegen das Wurzelobjekt und
-  ist kein Raum-Navigationsziel. Über das **X** kann die Auswahl gelöscht werden.
-- Bereits gespeicherte Räume benötigen keine Anpassung. Die neuen Ziele
-  werden ausschließlich auf ausdrückliche Auswahl hin verwendet.
-
-Bei neuen Räumen verwendet der Dialog den Symcon-Platzhalterwert `1`
-(„Kein(e)“). Ein zuvor gespeicherter Wert `0` (Wurzelobjekt, z. B. aus
-Build 14) bleibt funktional ohne Navigation; um auch im Auswahlfeld
-„Kein(e)“ anzuzeigen, kann die alte Auswahl einmalig per **X** gelöscht
-und die Konfiguration übernommen werden. Bestehende echte Zielkategorien
-bleiben unverändert.
+  Eine Zuordnung kann jederzeit mit dem **X** entfernt werden.
 
 Die Navigation verwendet die offizielle HTML-SDK-Funktion
 [`openObject()`](https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/html-sdk/openobject/)
@@ -132,8 +122,8 @@ Die Schreibweisen für Gruppe und Raum müssen mit einem Eintrag der Raumliste
 übereinstimmen. Falls ein Fensterkontakt `true` als *geschlossen* meldet,
 **„Kontakt invertieren“** einschalten.
 
-Der bisherige **einzelne Fensterkontakt** (`WindowID`) in der Raumkonfiguration
-bleibt gültig. Weitere Fenster können über die Fensterliste hinzugefügt werden.
+Neben dem **einzelnen Fensterkontakt** (`WindowID`) in der Raumkonfiguration
+können weitere Fenster über die Fensterliste hinzugefügt werden.
 Dieselbe Variablen-ID wird innerhalb eines Raums nur einmal gezählt; ist sie
 zusätzlich in der Fensterliste vorhanden, gilt deren Invertierungsoption.
 
@@ -163,10 +153,6 @@ Messwertproblem gemeldet.
 
 Die KNX-Belegung entspricht der offiziellen
 [KNX-System-Spezifikation für DPT 20.102](https://support.knx.org/hc/en-us/article_attachments/15392631105682).
-**Bestehende Raummonitor-Instanzen mit zuvor gespeicherter Belegung 0/1/2/3
-werden durch ein Modul-Update nicht automatisch verändert.** Hier die vier
-Werte einmalig manuell auf 1/2/3/4 umstellen und übernehmen. Individuelle
-Belegungen anderer Systeme bleiben unverändert.
 
 Fenster offen wird blau, geschlossen grün hervorgehoben. Bei Kontakten, die
 `true` als *geschlossen* senden, **„Fenster invertieren“** einschalten.
@@ -268,8 +254,8 @@ node tests/columns_test.js    # optionaler Test der dynamischen Spalten
 ```
 
 Alle PHP-Dateien können zusätzlich mit `php -l` und alle JSON-Dateien mit
-einem JSON-Validator geprüft werden. Der abschließende Praxistest muss in
-einer tatsächlichen Symcon-9.x-Instanz stattfinden.
+einem JSON-Validator geprüft werden. Für neue Funktionen ist zusätzlich
+ein Praxistest in einer Symcon-9.x-Instanz vorgesehen.
 
 ## Projektstruktur
 
@@ -319,6 +305,8 @@ konzeptionelle Anregung nicht auf die eigenständige Raummonitor-Software
 
 ## Ideen für Version 1.1+
 
+- [Frei konfigurierbare Betriebsarten je Raum](https://github.com/Abracoor/IPSymcon-Raummonitor/issues/1),
+  unabhängig von KNX und vom Variablentyp.
 - Assistent zur automatischen Zuordnung nach Kategorie, Variablennamen oder
   Profilen mit prüfbarer Vorschau.
 - Farbige Anzeige der Abweichung zwischen Ist- und Solltemperatur.
