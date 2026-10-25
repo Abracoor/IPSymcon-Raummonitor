@@ -10,6 +10,8 @@ alphabetisch nach Raumname sortiert.
 ## Datenfluss
 
 1. Die Instanz speichert zwei JSON-Listen (`Rooms`, `Lights`) und die Einstellungen.
+   Die Raumliste zeigt nur drei Übersichts-Spalten; ein eigenes Zeilenformular
+   enthält die optionalen Zuordnungen. Die JSON-Struktur bleibt unverändert.
 2. `ApplyChanges()` registriert Referenzen und `VM_UPDATE`-/`VM_DELETE`-Nachrichten
    für die verwendeten Variablen-IDs.
 3. `RaummonitorModel` liest alle Werte einmal pro Aktualisierung, bildet

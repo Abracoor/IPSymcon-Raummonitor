@@ -46,9 +46,12 @@ angelegt und die Dateien dieses Pakets auf dem Hauptbranch `main` liegen.
 
 ## Konfiguration der Räume
 
-In der Instanz gibt es die Liste **„Räume und Messwerte“**. Mit dem Plus
-eine Zeile je Raum anlegen. Die Spalten können im Konfigurationsdialog
-horizontal gescrollt werden.
+In der Instanz gibt es die Liste **„Räume und Messwerte“**. Mit dem
+**Hinzufügen**-Button eine Zeile je Raum anlegen. Die kompakte Liste zeigt nur
+Gruppe, Raumname und Isttemperatur. Beim Hinzufügen oder Bearbeiten öffnet sich
+ein Dialog mit allen Feldern; zusätzliche Werte sind in zwei aufklappbaren
+Bereichen untergebracht. So bleibt der Hinzufügen-Button auch bei normalem
+Browser-Zoom erreichbar.
 
 | Feld | Erforderlich | Verwendung |
 | --- | --- | --- |

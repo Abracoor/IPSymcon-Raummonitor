@@ -7,26 +7,57 @@
         {
             "type": "List",
             "name": "Rooms",
-            "caption": "Räume und Messwerte",
+            "caption": "Räume und Messwerte (Details per Hinzufügen/Bearbeiten)",
             "rowCount": 10,
             "add": true,
             "delete": true,
             "changeOrder": true,
             "columns": [
-                {"name": "Group", "caption": "Gruppe / Etage", "width": "130px", "add": "", "edit": {"type": "ValidationTextBox"}},
-                {"name": "Room", "caption": "Raumname *", "width": "180px", "add": "", "edit": {"type": "ValidationTextBox"}},
-                {"name": "ActualTempID", "caption": "Isttemperatur *", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "SetpointTempID", "caption": "Solltemperatur", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "OperationModeID", "caption": "Betriebsart", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "WindowID", "caption": "Fensterkontakt", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "WindowInverted", "caption": "Fenster invertieren", "width": "130px", "add": false, "edit": {"type": "CheckBox"}},
-                {"name": "ValveID", "caption": "Ventilstellung", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "ValveMax", "caption": "Ventil-Rohwert für 100 %", "width": "160px", "add": 100, "edit": {"type": "NumberSpinner", "minimum": 1, "maximum": 65535}},
-                {"name": "LightCountID", "caption": "Lichtanzahl (fertiger Wert)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "HumidityID", "caption": "Feuchte (%)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "CO2ID", "caption": "CO₂ (ppm)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "DewPointID", "caption": "Taupunkt (°C)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "HeatingCoolingID", "caption": "Heizen / Kühlen", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}}
+                {"name": "Group", "caption": "Gruppe / Etage", "width": "150px", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "Room", "caption": "Raumname *", "width": "auto", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "ActualTempID", "caption": "Isttemperatur *", "width": "240px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "SetpointTempID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "OperationModeID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "WindowID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "WindowInverted", "visible": false, "add": false, "edit": {"type": "CheckBox"}},
+                {"name": "ValveID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "ValveMax", "visible": false, "add": 100, "edit": {"type": "NumberSpinner", "minimum": 1, "maximum": 65535}},
+                {"name": "LightCountID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "HumidityID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "CO2ID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "DewPointID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "HeatingCoolingID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}}
+            ],
+            "form": [
+                {"type": "Label", "caption": "Pflichtangaben und Etage"},
+                {"type": "ValidationTextBox", "name": "Group", "caption": "Gruppe / Etage (optional)"},
+                {"type": "ValidationTextBox", "name": "Room", "caption": "Raumname *"},
+                {"type": "SelectVariable", "name": "ActualTempID", "caption": "Isttemperatur *"},
+                {
+                    "type": "ExpansionPanel",
+                    "caption": "Heizung, Fenster und Licht (optional)",
+                    "expanded": false,
+                    "items": [
+                        {"type": "SelectVariable", "name": "SetpointTempID", "caption": "Solltemperatur"},
+                        {"type": "SelectVariable", "name": "OperationModeID", "caption": "Betriebsart"},
+                        {"type": "SelectVariable", "name": "WindowID", "caption": "Fensterkontakt"},
+                        {"type": "CheckBox", "name": "WindowInverted", "caption": "Fenster invertieren (true = geschlossen)"},
+                        {"type": "SelectVariable", "name": "ValveID", "caption": "Ventilstellung"},
+                        {"type": "NumberSpinner", "name": "ValveMax", "caption": "Ventil-Rohwert für 100 %", "minimum": 1, "maximum": 65535},
+                        {"type": "SelectVariable", "name": "LightCountID", "caption": "Fertige Lichtanzahl (alternativ zur Lichtliste)"}
+                    ]
+                },
+                {
+                    "type": "ExpansionPanel",
+                    "caption": "Weitere Klimawerte (optional)",
+                    "expanded": false,
+                    "items": [
+                        {"type": "SelectVariable", "name": "HumidityID", "caption": "Luftfeuchtigkeit"},
+                        {"type": "SelectVariable", "name": "CO2ID", "caption": "CO₂-Wert"},
+                        {"type": "SelectVariable", "name": "DewPointID", "caption": "Taupunkt"},
+                        {"type": "SelectVariable", "name": "HeatingCoolingID", "caption": "Heizen / Kühlen"}
+                    ]
+                }
             ]
         },
         {
