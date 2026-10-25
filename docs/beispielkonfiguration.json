@@ -21,5 +21,5 @@
         {"Group": "Erdgeschoss", "Room": "Wohnzimmer", "VariableID": 12350, "Invert": false},
         {"Group": "Erdgeschoss", "Room": "Wohnzimmer", "VariableID": 12351, "Invert": false}
     ],
-    "Note": "Sämtliche IDs sind fiktive Beispiele; vor Verwendung durch echte Symcon-Variablen-IDs ersetzen."
+    "Note": "Nur Dokumentation: Alle IDs sind fiktiv und vor Verwendung durch echte Symcon-Variablen-IDs zu ersetzen."
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2 – Modul-Repository-Struktur korrigiert (25.10.2026)
+
+- Beispielkonfiguration von `examples/` nach `docs/` verschoben.
+- Der zusätzliche Ordner wurde von IP-Symcon als Modul ohne `module.json`
+  interpretiert und verhinderte die Aktualisierung des Repositories.
+
 ## 1.0.1 – Konfigurationsdialog verbessert (25.10.2026)
 
 - Die Raumliste zeigt nur noch Gruppe, Raumname und Isttemperatur.

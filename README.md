@@ -113,7 +113,7 @@ falsche Anzeigen zu vermeiden.
 
 ## Beispielkonfiguration
 
-Unter [examples/rooms.json](examples/rooms.json) gibt es ein kleines Beispiel.
+Unter [docs/beispielkonfiguration.json](docs/beispielkonfiguration.json) gibt es ein kleines Beispiel.
 Die IDs **12345 bis 12351 sind frei erfundene Platzhalter** und dürfen nicht
 ungeprüft in einer vorhandenen Symcon-Installation eingesetzt werden.
 
@@ -177,10 +177,9 @@ IPSymcon-Raummonitor/
 │   ├── module.php
 │   ├── module.html
 │   └── RaummonitorModel.php
-├── examples/
-│   └── rooms.json
 ├── docs/
-│   └── MODULKONZEPT.md
+│   ├── MODULKONZEPT.md
+│   └── beispielkonfiguration.json
 └── tests/
     ├── run.php
     └── module_smoke.php
