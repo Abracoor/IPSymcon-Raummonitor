@@ -97,6 +97,8 @@ $html = $instance->GetVisualizationTile();
 verify(str_contains($html, 'function handleMessage('), 'HTML-SDK Nachrichtenfunktion vorhanden');
 verify(!str_contains($html, '<script>alert(1)</script>'), 'Raumname kann kein Script einschleusen');
 verify(str_contains($html, '\\u003Cscript\\u003E'), 'HTML-Tag wird im JSON geschützt');
+verify(str_contains($html, 'overflow-x: auto'), 'Tabelle bleibt horizontal scrollbar');
+verify(!str_contains($html, 'position: sticky'), 'Keine überlagernde fixe Raumspalte bei schmalen Kacheln');
 
 $instance->Update();
 verify(count($instance->updates) === 1, 'Unveränderter Zustand wird nicht erneut gesendet');

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.10 – Überlagerung in schmalen Kacheln behoben (25.10.2026)
+
+- Die Raumspalte bleibt beim horizontalen Scrollen nicht mehr fixiert.
+  Dadurch können Messwerte bei schmalen Kacheln nicht mehr unter dem
+  teilweise transparenten Hintergrund der Raumbezeichnungen durchscheinen.
+- Die Tabelle wird als Ganzes seitlich verschoben. Darstellung, Werte und
+  gespeicherte Konfiguration bleiben ansonsten unverändert.
+
 ## 1.0.9 – Beschriftung der zyklischen Aktualisierung verbessert (25.10.2026)
 
 - Feldbeschriftung auf „Zyklische Aktualisierung (s)“ gekürzt, damit sie

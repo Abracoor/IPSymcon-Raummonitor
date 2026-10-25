@@ -45,9 +45,10 @@
     .rm-table th { font-size: .78em; font-weight: 650; color: var(--rm-subtle); background: var(--rm-soft); }
     .rm-table tr:last-child td { border-bottom: 0; }
     .rm-table tr:hover td { background: var(--rm-soft); }
-    .rm-table th:first-child, .rm-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--rm-sticky, var(--rm-base, transparent)); font-weight: 600; }
-    .rm-table th:first-child { z-index: 2; background: var(--rm-head-bg, var(--rm-soft)); }
-    .rm-table td:first-child { background: var(--rm-base, var(--rm-soft)); }
+    /* Bei schmalen Kacheln die ganze Tabelle horizontal scrollen lassen.
+       Eine fixierte erste Spalte mit halbtransparentem Hintergrund führte
+       beim Verschieben zu überlagerten Raum- und Messwerttexten. */
+    .rm-table td:first-child { font-weight: 600; }
     .rm-value { font-variant-numeric: tabular-nums; }
     .rm-dash { color: var(--rm-subtle); }
     .rm-pill { display: inline-block; border-radius: 999px; border: 1px solid transparent; padding: .22rem .52rem; line-height: 1.35; font-size: .91em; font-weight: 650; }
