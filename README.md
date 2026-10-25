@@ -260,12 +260,23 @@ IPSymcon-Raummonitor/
 ## Herkunft und Lizenz
 
 Die **konzeptionelle Anregung** stammt vom Projekt
-[Zustandszaehler von Schnittcher](https://github.com/Schnittcher/Zustandszaehler).
-Der Raummonitor wurde eigenständig neu entwickelt, ohne Dateien oder
-Programmcode des Referenzprojekts zu kopieren oder das bestehende Modul zu
-erweitern. Er verwendet eine eigene Bibliotheks- und Modul-GUID.
+[Zustandszaehler von Schnittcher](https://github.com/Schnittcher/Zustandszaehler),
+das unter der Lizenz
+[Creative Commons BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+veröffentlicht wird. Die Anregung betrifft insbesondere die Darstellung
+gruppierter Informationen in einer eigenen IP-Symcon-Kachel.
+
+Der **Raummonitor ist keine Kopie oder Bearbeitung des Zustandszählers**:
+Seine Datenverarbeitung, Konfiguration und Darstellung wurden eigenständig
+entwickelt. Es wurden keine Quelldateien oder Programmcodeteile des
+Referenzprojekts übernommen. Der Raummonitor besitzt eine eigene
+Bibliotheks- und Modul-GUID. Die Nennung des Referenzprojekts bedeutet
+keine Beteiligung oder Billigung durch dessen Autor.
 
 Dieses eigenständige Projekt steht unter der [MIT-Lizenz](LICENSE).
+Die CC BY-NC-SA 4.0-Lizenz des Referenzprojekts wird durch die rein
+konzeptionelle Anregung nicht auf die eigenständige Raummonitor-Software
+übertragen.
 
 ## Ideen für Version 1.1+
 
