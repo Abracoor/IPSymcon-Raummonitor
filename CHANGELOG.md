@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.9 – Beschriftung der zyklischen Aktualisierung verbessert (25.10.2026)
+
+- Feldbeschriftung auf „Zyklische Aktualisierung (s)“ gekürzt, damit sie
+  in der IP-Symcon-Konfiguration vollständig sichtbar ist.
+- Den Hinweis „0 = nur bei Variablenänderungen“ in eine separate Zeile verlegt.
+  Keine Änderung an der Timerfunktion oder an gespeicherten Einstellungen.
+
 ## 1.0.8 – Konfigurierbare Temperatur-Plausibilitätsprüfung (25.10.2026)
 
 - Automatische Prüfung der Ist- und Solltemperaturen mit Standardgrenzen

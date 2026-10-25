@@ -137,7 +137,8 @@
                 {"type": "Label", "caption": "Standard: −20 bis +60 °C. Bei Über- oder Unterschreitung zeigt die Kachel – und die Instanz meldet Status 202. Die Originalvariablen werden nicht verändert. Die Untergrenze muss kleiner als die Obergrenze sein."}
             ]
         },
-        {"type": "NumberSpinner", "name": "RefreshSeconds", "caption": "Zusätzliche zyklische Aktualisierung in Sekunden (0 = nur bei Änderung)", "minimum": 0, "maximum": 3600}
+        {"type": "NumberSpinner", "name": "RefreshSeconds", "caption": "Zyklische Aktualisierung (s)", "minimum": 0, "maximum": 3600},
+        {"type": "Label", "caption": "0 = nur bei Variablenänderungen aktualisieren (Standard). Ein Wert ab 1 aktiviert die zusätzliche zyklische Prüfung im eingestellten Sekundenabstand."}
     ],
     "actions": [
         {"type": "Button", "caption": "Jetzt aktualisieren", "onClick": "RMON_Update($id);"},
