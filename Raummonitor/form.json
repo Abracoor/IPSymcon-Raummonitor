@@ -79,7 +79,7 @@
                 {"name": "Invert", "caption": "Invertieren", "width": "110px", "add": false, "edit": {"type": "CheckBox"}}
             ]
         },
-        {"type": "Label", "caption": "KNX DPT 20.102 (HVAC-Modus) ist standardmäßig 0=Komfort, 1=Standby, 2=Nacht, 3=Frostschutz. Andere Integer-Belegungen hier anpassen."},
+        {"type": "Label", "caption": "KNX DPT 20.102 (HVAC-Modus): 0=Automatik, 1=Komfort, 2=Standby, 3=Nacht/Economy, 4=Frost-/Hitzeschutz. Die vier zugeordneten Werte sind frei anpassbar; 0=Automatik wird derzeit nicht gesondert ausgewertet."},
         {
             "type": "RowLayout",
             "items": [

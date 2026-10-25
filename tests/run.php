@@ -15,9 +15,9 @@ function check(mixed $actual, mixed $expected, string $description): void
 }
 
 $values = [
-    1 => 21.4, 2 => 22.0, 3 => 0, 4 => false, 5 => 35,
-    6 => true, 7 => false, 8 => 23.0, 9 => 24.0, 10 => 3,
-    11 => 0, 12 => 25, 13 => 18.5, 14 => 17.0, 15 => 2,
+    1 => 21.4, 2 => 22.0, 3 => 1, 4 => false, 5 => 35,
+    6 => true, 7 => false, 8 => 23.0, 9 => 24.0, 10 => 4,
+    11 => 0, 12 => 25, 13 => 18.5, 14 => 17.0, 15 => 3,
     16 => true, 17 => 127.5, 18 => 42.0, 19 => 850,
     20 => 12.5, 21 => true
 ];
@@ -56,12 +56,19 @@ check($data['openWindows'], 0, 'Fensterstatus inklusive Invertierung');
 check($data['modeCounts']['comfort'], 1, 'Komfort erkannt');
 check($data['modeCounts']['frost'], 1, 'Frostschutz erkannt');
 check($data['modeCounts']['night'], 1, 'Nacht erkannt');
+check($data['groups'][0]['rooms'][1]['mode']['label'], 'Komfort', 'KNX DPT 20.102: 1 = Komfort');
+check($data['groups'][0]['rooms'][0]['mode']['label'], 'Frostschutz', 'KNX DPT 20.102: 4 = Frostschutz');
 check($data['groups'][0]['rooms'][0]['name'], 'Bad', 'Alphabetisch innerhalb EG');
 check($data['groups'][0]['rooms'][1]['lights'], 1, 'Lichtanzahl aus zwei Bool-Variablen');
 check($data['groups'][1]['rooms'][0]['valve'], 50.0, 'Ventil-Rohwert 0–255 umgerechnet');
 check($data['groups'][0]['rooms'][1]['heatingCooling'], 'Kühlen', 'Heizen/Kühlen');
 check($data['missingIDs'], [], 'Alle Werte verfügbar');
 check($reads, count(RaummonitorModel::configuredIDs($rooms, $lights)), 'Jede referenzierte Variable genau einmal gelesen');
+
+$values[3] = 2;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader);
+check($data['modeCounts']['standby'], 1, 'KNX DPT 20.102: 2 = Standby');
+$values[3] = 1;
 
 unset($values[7]);
 $data = RaummonitorModel::build($rooms, $lights, [], $reader);
@@ -70,7 +77,7 @@ check($data['missingIDs'], [7], 'Fehlende ID wird gemeldet');
 
 $data = RaummonitorModel::build(
     [['Group' => 'OG', 'Room' => 'Test', 'ActualTempID' => 1, 'OperationModeID' => 3]],
-    [], ['ComfortValue' => 5, 'StandbyValue' => 6, 'NightValue' => 7, 'FrostValue' => 0],
+    [], ['ComfortValue' => 5, 'StandbyValue' => 6, 'NightValue' => 7, 'FrostValue' => 1],
     $reader
 );
 check($data['modeCounts']['frost'], 1, 'Integerzuordnung frei konfigurierbar');

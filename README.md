@@ -59,7 +59,7 @@ Browser-Zoom erreichbar.
 | Raumname | **Ja** | z. B. Wohnzimmer; innerhalb einer Gruppe eindeutig |
 | Isttemperatur | **Ja** | Variable in Grad Celsius |
 | Solltemperatur | Nein | Variable in Grad Celsius |
-| Betriebsart | Nein | Integerwert; Vorgabe 0–3 |
+| Betriebsart | Nein | Integerwert; KNX DPT 20.102 als Vorgabe 1–4 |
 | Fensterkontakt | Nein | Bool: `true` bedeutet offen, optional invertierbar |
 | Ventilstellung | Nein | Numerisch; standardmäßig 0–100 % |
 | Lichtanzahl | Nein | Bereits vorhandene numerische Gesamtzahl |
@@ -89,14 +89,22 @@ in der Lichtspalte „–“; fehlende Zuordnungen zählen ausdrücklich **nicht
 
 | Integer (Standard) | Modus | Farbe |
 | --- | --- | --- |
-| `0` | Komfort | Grün |
-| `1` | Standby | Gelb |
-| `2` | Nacht | Grau |
-| `3` | Frostschutz | Blau |
+| `0` | Automatik | Derzeit keine gesonderte Modusanzeige |
+| `1` | Komfort | Grün |
+| `2` | Standby | Gelb |
+| `3` | Nacht / Economy | Grau |
+| `4` | Frost-/Hitzeschutz | Blau |
 
 Diese vier Werte lassen sich im Formular einzeln verändern. Jeder Wert muss
 einzigartig sein. Auch Stringwerte wie `Komfort`, `Eco` oder `Frostschutz`
 werden erkannt; bei unbekannten Codes wird ein neutraler Status angezeigt.
+
+Die KNX-Belegung entspricht der offiziellen
+[KNX-System-Spezifikation für DPT 20.102](https://support.knx.org/hc/en-us/article_attachments/15392631105682).
+**Bestehende Raummonitor-Instanzen mit zuvor gespeicherter Belegung 0/1/2/3
+werden durch ein Modul-Update nicht automatisch verändert.** Hier die vier
+Werte einmalig manuell auf 1/2/3/4 umstellen und übernehmen. Individuelle
+Belegungen anderer Systeme bleiben unverändert.
 
 Fenster offen wird blau, geschlossen grün hervorgehoben. Bei Kontakten, die
 `true` als *geschlossen* senden, **„Fenster invertieren“** einschalten.

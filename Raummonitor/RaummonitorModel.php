@@ -86,10 +86,10 @@ final class RaummonitorModel
         }
 
         $mapping = [
-            (int) ($options['ComfortValue'] ?? 0) => ['kind' => 'comfort', 'label' => 'Komfort'],
-            (int) ($options['StandbyValue'] ?? 1) => ['kind' => 'standby', 'label' => 'Standby'],
-            (int) ($options['NightValue'] ?? 2) => ['kind' => 'night', 'label' => 'Nacht'],
-            (int) ($options['FrostValue'] ?? 3) => ['kind' => 'frost', 'label' => 'Frostschutz']
+            (int) ($options['ComfortValue'] ?? 1) => ['kind' => 'comfort', 'label' => 'Komfort'],
+            (int) ($options['StandbyValue'] ?? 2) => ['kind' => 'standby', 'label' => 'Standby'],
+            (int) ($options['NightValue'] ?? 3) => ['kind' => 'night', 'label' => 'Nacht'],
+            (int) ($options['FrostValue'] ?? 4) => ['kind' => 'frost', 'label' => 'Frostschutz']
         ];
         if (count($mapping) !== 4) {
             $configErrors[] = 'Die vier Betriebsarten müssen unterschiedliche Integerwerte besitzen';

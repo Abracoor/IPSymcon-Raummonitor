@@ -21,10 +21,13 @@ class Raummonitor extends IPSModuleStrict
 
         $this->RegisterPropertyString('Rooms', '[]');
         $this->RegisterPropertyString('Lights', '[]');
-        $this->RegisterPropertyInteger('ComfortValue', 0);
-        $this->RegisterPropertyInteger('StandbyValue', 1);
-        $this->RegisterPropertyInteger('NightValue', 2);
-        $this->RegisterPropertyInteger('FrostValue', 3);
+        // KNX DPT 20.102: 0=Auto, 1=Komfort, 2=Standby,
+        // 3=Economy/Nacht, 4=Frost-/Hitzeschutz.
+        // Die Werte bleiben für andere Systeme frei konfigurierbar.
+        $this->RegisterPropertyInteger('ComfortValue', 1);
+        $this->RegisterPropertyInteger('StandbyValue', 2);
+        $this->RegisterPropertyInteger('NightValue', 3);
+        $this->RegisterPropertyInteger('FrostValue', 4);
         $this->RegisterPropertyBoolean('CoolingWhenTrue', true);
         $this->RegisterPropertyBoolean('GroupRooms', true);
         $this->RegisterPropertyBoolean('ShowExtraColumns', false);

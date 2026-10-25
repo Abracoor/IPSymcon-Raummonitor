@@ -29,7 +29,7 @@ alphabetisch nach Raumname sortiert.
 | `Room` | Ja | Sichtbarer Raumname; in der Gruppe eindeutig |
 | `ActualTempID` | Ja | Aktuelle Temperatur in °C |
 | `SetpointTempID` | Nein | Solltemperatur in °C |
-| `OperationModeID` | Nein | Ganzzahl 0/1/2/3, konfigurierbare Zuordnung |
+| `OperationModeID` | Nein | KNX DPT 20.102 standardmäßig 1/2/3/4 (Komfort/Standby/Nacht/Schutz), konfigurierbare Zuordnung; 0=Auto wird bislang nicht gesondert dargestellt |
 | `WindowID` | Nein | Bool/0/1 als Fensterstatus; mit `WindowInverted` invertierbar |
 | `ValveID` | Nein | Aktuelle Ventilstellung; `ValveMax` skaliert auf Prozent |
 | `LightCountID` | Nein | Bereits vorhandene Anzahl eingeschalteter Lichter |

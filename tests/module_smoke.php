@@ -11,7 +11,7 @@ const IS_INACTIVE = 104;
 const IS_ACTIVE = 102;
 const INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN = 2;
 
-$GLOBALS['testValues'] = [10 => 21.5, 11 => 0, 12 => true];
+$GLOBALS['testValues'] = [10 => 21.5, 11 => 1, 12 => true];
 
 function IPS_GetKernelRunlevel(): int { return KR_READY; }
 function IPS_VariableExists(int $id): bool { return array_key_exists($id, $GLOBALS['testValues']); }
@@ -75,6 +75,7 @@ $instance->properties['Rooms'] = json_encode([
 ]);
 $instance->ApplyChanges();
 verify($instance->status === 102, 'Instanzstatus ist aktiv');
+verify($instance->GetSnapshot()['modeCounts']['comfort'] === 1, 'DPT 20.102: 1 = Komfort auch in Modulvoreinstellung');
 verify($instance->visualizationType === 2, 'HTML-Vollbildtyp verwendet');
 verify(count($instance->references) === 3, 'Drei referenzierte Variablen');
 verify(count($instance->updates) === 1, 'Erste Kachel-Aktualisierung verschickt');

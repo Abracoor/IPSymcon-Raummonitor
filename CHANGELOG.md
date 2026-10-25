@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.3 – KNX-Betriebsarten korrigiert (25.10.2026)
+
+- Standardzuordnung gemäß KNX DPT 20.102 korrigiert: 1=Komfort, 2=Standby,
+  3=Nacht/Economy, 4=Frost-/Hitzeschutz; 0=Automatik ist nicht gesondert
+  implementiert.
+- Formulardokumentation, README und Tests angepasst.
+- Bereits gespeicherte Modul-Einstellungen bleiben absichtlich unverändert;
+  bei vorhandenen Instanzen die vier Werte einmalig manuell anpassen.
+
 ## 1.0.2 – Modul-Repository-Struktur korrigiert (25.10.2026)
 
 - Beispielkonfiguration von `examples/` nach `docs/` verschoben.
