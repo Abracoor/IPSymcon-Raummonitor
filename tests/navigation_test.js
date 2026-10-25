@@ -11,6 +11,14 @@ const html = fs.readFileSync(path.join(__dirname, '../Raummonitor/module.html'),
 const script = html.split('<script>')[1]?.split('</script>')[0];
 assert.ok(script, 'HTML enthält die Kachel-Logik');
 
+const form = JSON.parse(fs.readFileSync(path.join(__dirname, '../Raummonitor/form.json'), 'utf8'));
+const roomList = form.elements.find(element => element.name === 'Rooms');
+const nav = roomList.form.find(element => element.caption === 'Navigation zur Detailseite (optional)');
+const picker = nav.items.find(element => element.name === 'DetailCategoryID');
+assert.equal(picker.value, 0, 'Kategorieauswahl beginnt ausdrücklich ohne Detailziel');
+assert.ok(nav.items.some(element => element.type === 'Label' && element.caption.includes('Wert 0')),
+    'Raumdialog erklärt den inaktiven Ausgangszustand');
+
 const opened = [];
 const context = vm.createContext({
     document: {

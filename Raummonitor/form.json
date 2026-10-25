@@ -39,8 +39,8 @@
                     "caption": "Navigation zur Detailseite (optional)",
                     "expanded": false,
                     "items": [
-                        {"type": "SelectCategory", "name": "DetailCategoryID", "caption": "Detailseite"},
-                        {"type": "Label", "caption": "Optional: Vorhandene Kategorie der Kachelvisualisierung auswählen. Nur dann wird der Raumname anklickbar. Ohne Auswahl bleibt die bisherige Darstellung unverändert."}
+                        {"type": "SelectCategory", "name": "DetailCategoryID", "caption": "Detailseite", "value": 0},
+                        {"type": "Label", "caption": "Keine Detailseite ausgewählt (Wert 0) = Raumname bleibt normaler Text. Erst die ausdrückliche Auswahl einer vorhandenen Kategorie aktiviert den Seitenwechsel. Bereits gespeicherte Zielkategorien bleiben erhalten."}
                     ]
                 },
                 {

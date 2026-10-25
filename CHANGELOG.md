@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.14 – Eindeutiger Ausgangswert für optionale Detailseite (25.10.2026)
+
+- Auswahlfeld für die Raum-Detailseite explizit mit dem Wert `0` initialisiert.
+  Dadurch ist der inaktive Zustand eindeutig festgelegt, statt den
+  Standardwert des Kategorie-Auswahlfelds zu verwenden.
+- Der Erklärungstext benennt den inaktiven Zustand (Wert 0) ausdrücklich.
+- Bereits gespeicherte Zielkategorien und das Klickverhalten bleiben erhalten.
+
 ## 1.0.13 – Klick auf Raumnamen zur Detailseite (25.10.2026)
 
 - Pro Raum kann optional eine Zielkategorie für eine vorhandene Detailseite
