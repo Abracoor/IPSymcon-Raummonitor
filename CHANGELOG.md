@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.6 – Beschriftung im Raumdialog verbessert (25.10.2026)
+
+- Das Feld für den einzelnen Fensterkontakt heißt im Bearbeitungsdialog
+  kürzer „Fensterkontakt“, damit die Beschriftung vollständig sichtbar bleibt.
+- Der Hinweis auf die zusätzliche Fensterliste steht nun in einer eigenen
+  Zeile. Keine Änderung an gespeicherten Zuordnungen oder Funktionen.
+
 ## 1.0.5 – Dynamische Tabellenspalten (25.10.2026)
 
 - Tabellenspalten werden standardmäßig anhand der konfigurierten Variablen

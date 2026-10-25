@@ -40,7 +40,8 @@
                     "items": [
                         {"type": "SelectVariable", "name": "SetpointTempID", "caption": "Solltemperatur"},
                         {"type": "SelectVariable", "name": "OperationModeID", "caption": "Betriebsart"},
-                        {"type": "SelectVariable", "name": "WindowID", "caption": "Einzelner Fensterkontakt (optional, auch zusätzlich zur Fensterliste)"},
+                        {"type": "SelectVariable", "name": "WindowID", "caption": "Fensterkontakt"},
+                        {"type": "Label", "caption": "Optional: Weitere Fensterkontakte können unten in der separaten Fensterliste ergänzt werden."},
                         {"type": "CheckBox", "name": "WindowInverted", "caption": "Fenster invertieren (true = geschlossen)"},
                         {"type": "SelectVariable", "name": "ValveID", "caption": "Ventilstellung"},
                         {"type": "NumberSpinner", "name": "ValveMax", "caption": "Ventil-Rohwert für 100 %", "minimum": 1, "maximum": 65535},
