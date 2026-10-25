@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.7 – Automatikbetrieb und Fehlererkennung für HVAC (25.10.2026)
+
+- KNX DPT 20.102: gültigen Wert `0` als „Automatik“ darstellen; die
+  zusätzliche Kennzahl erscheint nur, wenn mindestens ein Raum so betrieben wird.
+- Individuelle Betriebsart-Zuordnungen mit Wert `0` behalten Vorrang.
+- Unbekannte numerische Betriebsarten wie `99` werden mit Rohwert
+  gekennzeichnet und lösen eine Diagnose-/Instanzwarnung (202) aus.
+- Modell- und Integrationstests für Auto, ungültige Codes und individuelle
+  Mappings ergänzt.
+
 ## 1.0.6 – Beschriftung im Raumdialog verbessert (25.10.2026)
 
 - Das Feld für den einzelnen Fensterkontakt heißt im Bearbeitungsdialog

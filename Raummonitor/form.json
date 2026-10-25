@@ -107,7 +107,7 @@
                 {"type": "CheckBox", "name": "Invert", "caption": "Kontakt invertieren (true = geschlossen)"}
             ]
         },
-        {"type": "Label", "caption": "KNX DPT 20.102 (HVAC-Modus): 0=Automatik, 1=Komfort, 2=Standby, 3=Nacht/Economy, 4=Frost-/Hitzeschutz. Die vier zugeordneten Werte sind frei anpassbar; 0=Automatik wird derzeit nicht gesondert ausgewertet."},
+        {"type": "Label", "caption": "KNX DPT 20.102 (HVAC-Modus): 0=Automatik, 1=Komfort, 2=Standby, 3=Nacht/Economy, 4=Frost-/Hitzeschutz. 0=Automatik wird automatisch erkannt; eine individuelle Zuordnung des Werts 0 zu einem der vier Modi hat Vorrang."},
         {
             "type": "RowLayout",
             "items": [

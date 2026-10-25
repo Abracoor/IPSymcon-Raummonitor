@@ -29,7 +29,7 @@ alphabetisch nach Raumname sortiert.
 | `Room` | Ja | Sichtbarer Raumname; in der Gruppe eindeutig |
 | `ActualTempID` | Ja | Aktuelle Temperatur in °C |
 | `SetpointTempID` | Nein | Solltemperatur in °C |
-| `OperationModeID` | Nein | KNX DPT 20.102 standardmäßig 1/2/3/4 (Komfort/Standby/Nacht/Schutz), konfigurierbare Zuordnung; 0=Auto wird bislang nicht gesondert dargestellt |
+| `OperationModeID` | Nein | KNX DPT 20.102 standardmäßig 1/2/3/4 (Komfort/Standby/Nacht/Schutz), konfigurierbare Zuordnung; 0=Automatik wird erkannt, sofern nicht bereits individuell belegt |
 | `WindowID` | Nein | Bestehender Einzelkontakt als Bool/0/1; mit `WindowInverted` invertierbar |
 | `ValveID` | Nein | Aktuelle Ventilstellung; `ValveMax` skaliert auf Prozent |
 | `LightCountID` | Nein | Bereits vorhandene Anzahl eingeschalteter Lichter |
@@ -77,6 +77,7 @@ Mindestbreite richtet sich nach der Anzahl und Art der sichtbaren Spalten.
 | Standby | Gelb/Amber |
 | Nacht | Grau |
 | Frostschutz | Blau |
+| Automatik | Grau (neutral) |
 | Fenster offen | Blau |
 | Fenster geschlossen | Grün |
 | Unbekannt/nicht eingerichtet | Neutral oder Gedankenstrich |
@@ -91,6 +92,9 @@ horizontal scrollbar, falls nicht alle Spalten in eine schmale Kachel passen.
 - `IS_INACTIVE (104)`: keine Räume vorhanden.
 - `201`: fehlerhafte Konfiguration, doppelte Namen, nicht eindeutiges Modusmapping.
 - `202`: mindestens ein konfigurierter Wert fehlt oder hat ein inkompatibles Format.
+- Unbekannte Integer-Betriebsarten (z. B. `99`) erhalten den Status
+  „Unbekannt (99)“ und führen ebenfalls zu `202`. Der gültige Modus `0=Automatik`
+  bleibt ohne Fehlermeldung und wird bei Bedarf zusätzlich zusammengefasst.
 - Nicht zugeordnete optionale Felder werden als „–“ dargestellt, nicht als `0`.
 - Nicht vorhandene Werte werden niemals als „Fenster geschlossen“ interpretiert.
 - Ein nicht lesbarer Fensterkontakt wird markiert. Bei ausschließlich geschlossenen

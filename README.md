@@ -111,7 +111,7 @@ zusätzlich in der Fensterliste vorhanden, gilt deren Invertierungsoption.
 
 | Integer (Standard) | Modus | Farbe |
 | --- | --- | --- |
-| `0` | Automatik | Derzeit keine gesonderte Modusanzeige |
+| `0` | Automatik | Neutral (grau) |
 | `1` | Komfort | Grün |
 | `2` | Standby | Gelb |
 | `3` | Nacht / Economy | Grau |
@@ -119,7 +119,10 @@ zusätzlich in der Fensterliste vorhanden, gilt deren Invertierungsoption.
 
 Diese vier Werte lassen sich im Formular einzeln verändern. Jeder Wert muss
 einzigartig sein. Auch Stringwerte wie `Komfort`, `Eco` oder `Frostschutz`
-werden erkannt; bei unbekannten Codes wird ein neutraler Status angezeigt.
+werden erkannt. `0 = Automatik` wird zusätzlich erkannt, solange nicht eine
+der vier frei konfigurierbaren Betriebsarten ausdrücklich den Wert `0` erhält.
+Ein unbekannter Code wird als **„Unbekannt (Wert)“** angezeigt und als
+Messwertproblem gemeldet.
 
 Die KNX-Belegung entspricht der offiziellen
 [KNX-System-Spezifikation für DPT 20.102](https://support.knx.org/hc/en-us/article_attachments/15392631105682).
@@ -149,7 +152,8 @@ ungeprüft in einer vorhandenen Symcon-Installation eingesetzt werden.
 
 ## Anzeige / Kachel
 
-Oberhalb stehen sechs Kennzahlen. Darunter folgt die nach Gruppe und Raumname
+Oberhalb stehen sechs Kennzahlen; wenn ein Raum den Automatikmodus verwendet,
+erscheint eine zusätzliche Kennzahl „Automatik“. Darunter folgt die nach Gruppe und Raumname
 sortierte Tabelle. **Standardmäßig ist die automatische Spaltenauswahl aktiv:**
 Raumname und Isttemperatur sind immer sichtbar. Solltemperatur, Licht,
 Betriebsart, Fenster und Ventil erscheinen nur, wenn mindestens ein Raum eine

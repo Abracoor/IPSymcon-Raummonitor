@@ -71,6 +71,27 @@ check($data['groups'][0]['rooms'][1]['heatingCooling'], 'Kühlen', 'Heizen/Kühl
 check($data['missingIDs'], [], 'Alle Werte verfügbar');
 check($reads, count(RaummonitorModel::configuredIDs($rooms, $lights)), 'Jede referenzierte Variable genau einmal gelesen');
 
+// QA: Der KNX-Modus 0 ist gültig, unbekannte Codes dagegen nicht.
+$values[3] = 0;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader);
+check($data['modeCounts']['auto'], 1, 'KNX DPT 20.102: 0 = Automatik');
+check($data['groups'][0]['rooms'][1]['mode']['label'], 'Automatik', 'Automatik als lesbarer Status');
+check($data['missingIDs'], [], 'Gültiger Automatikmodus erzeugt keinen Datenfehler');
+
+$data = RaummonitorModel::build(
+    [['Group' => 'EG', 'Room' => 'Benutzerdefiniert', 'ActualTempID' => 1, 'OperationModeID' => 3]],
+    [], ['ComfortValue' => 0, 'StandbyValue' => 1, 'NightValue' => 2, 'FrostValue' => 3], $reader
+);
+check($data['modeCounts']['comfort'], 1, 'Benutzerdefinierte Belegung von 0 hat Vorrang');
+check($data['modeCounts']['auto'], 0, 'Belegter Wert 0 wird nicht als Automatik doppelt gezählt');
+
+$values[3] = 99;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader);
+check($data['modeCounts']['unknown'], 1, 'Unbekannter Integerstatus erkannt');
+check($data['groups'][0]['rooms'][1]['mode']['label'], 'Unbekannt (99)', 'Unbekannter Code verständlich angezeigt');
+check(in_array(3, $data['missingIDs'], true), true, 'Ungültige Betriebsart löst Messwertfehler aus');
+$values[3] = 1;
+
 // Mehrere Kontakte im selben Raum: bisheriger Einzelkontakt + zusätzliche Liste.
 $values[22] = true;
 $windows = [

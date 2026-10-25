@@ -32,6 +32,7 @@
     .rm-stat[data-kind="standby"] .rm-stat-value { color: var(--rm-amber); }
     .rm-stat[data-kind="night"] .rm-stat-value { color: var(--rm-gray); }
     .rm-stat[data-kind="frost"] .rm-stat-value { color: var(--rm-blue); }
+    .rm-stat[data-kind="auto"] .rm-stat-value { color: var(--rm-gray); }
     .rm-warning { margin-bottom: .7rem; padding: .4rem .55rem; color: var(--rm-amber); border: 1px dashed currentColor; border-radius: .45rem; font-size: .8em; }
     .rm-empty { text-align: center; padding: 1.3rem .6rem; color: var(--rm-subtle); }
     .rm-group { margin-top: .8rem; }
@@ -52,7 +53,7 @@
     .rm-pill { display: inline-block; border-radius: 999px; border: 1px solid transparent; padding: .22rem .52rem; line-height: 1.35; font-size: .91em; font-weight: 650; }
     .rm-pill[data-state="comfort"], .rm-pill[data-state="closed"] { color: var(--rm-green); border-color: color-mix(in srgb, var(--rm-green) 28%, transparent); background: color-mix(in srgb, var(--rm-green) 13%, transparent); }
     .rm-pill[data-state="standby"], .rm-pill[data-state="light-on"] { color: var(--rm-amber); border-color: color-mix(in srgb, var(--rm-amber) 28%, transparent); background: color-mix(in srgb, var(--rm-amber) 13%, transparent); }
-    .rm-pill[data-state="night"] { color: var(--rm-gray); border-color: color-mix(in srgb, var(--rm-gray) 28%, transparent); background: color-mix(in srgb, var(--rm-gray) 13%, transparent); }
+    .rm-pill[data-state="night"], .rm-pill[data-state="auto"] { color: var(--rm-gray); border-color: color-mix(in srgb, var(--rm-gray) 28%, transparent); background: color-mix(in srgb, var(--rm-gray) 13%, transparent); }
     .rm-pill[data-state="frost"], .rm-pill[data-state="open"] { color: var(--rm-blue); border-color: color-mix(in srgb, var(--rm-blue) 28%, transparent); background: color-mix(in srgb, var(--rm-blue) 13%, transparent); }
     .rm-pill[data-state="unknown"], .rm-pill[data-state="light-off"] { color: var(--rm-subtle); border-color: var(--rm-line); background: var(--rm-soft); }
     .rm-valve { display: flex; align-items: center; gap: .35rem; }
@@ -102,7 +103,7 @@
 
     function rmPill(label, state) {
         const element = rmNode('span', 'rm-pill', label);
-        element.dataset.state = ['comfort', 'standby', 'night', 'frost', 'unknown', 'open', 'closed', 'light-on', 'light-off'].includes(state)
+        element.dataset.state = ['comfort', 'standby', 'night', 'frost', 'auto', 'unknown', 'open', 'closed', 'light-on', 'light-off'].includes(state)
             ? state : 'unknown';
         return element;
     }
@@ -235,14 +236,17 @@
         if (!stats || !warning || !groups) return;
 
         const modes = data.modeCounts || {};
-        stats.replaceChildren(
+        const cards = [
             rmStat('Räume', data.totalRooms || 0, 'rooms'),
             rmStat('Fenster offen', data.openWindows || 0, 'window'),
             rmStat('Komfort', modes.comfort || 0, 'comfort'),
             rmStat('Standby', modes.standby || 0, 'standby'),
             rmStat('Nacht', modes.night || 0, 'night'),
             rmStat('Frostschutz', modes.frost || 0, 'frost')
-        );
+        ];
+        // Nur bei Bedarf eine zusätzliche Automatik-Kennzahl einblenden.
+        if ((Number(modes.auto) || 0) > 0) cards.push(rmStat('Automatik', modes.auto, 'auto'));
+        stats.replaceChildren(...cards);
         const issueCount = Number(data.issueCount) || 0;
         warning.hidden = issueCount === 0;
         warning.textContent = issueCount === 1

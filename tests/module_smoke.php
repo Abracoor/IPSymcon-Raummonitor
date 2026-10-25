@@ -100,6 +100,16 @@ $GLOBALS['testValues'][12] = false;
 $instance->MessageSink(time(), 12, VM_UPDATE, []);
 verify(count($instance->updates) === 2, 'Variablenupdate aktualisiert die Kachel');
 
+$GLOBALS['testValues'][11] = 99;
+$instance->MessageSink(time(), 11, VM_UPDATE, []);
+verify($instance->status === 202, 'Unbekannte KNX-Betriebsart führt zu Fehlerstatus');
+verify($instance->GetSnapshot()['modeCounts']['unknown'] === 1, 'Ungültiger Modus erscheint nicht als Komfort');
+
+$GLOBALS['testValues'][11] = 0;
+$instance->MessageSink(time(), 11, VM_UPDATE, []);
+verify($instance->status === 102, 'KNX-Automatik ist gültig und hebt den Fehlerstatus auf');
+verify($instance->GetSnapshot()['modeCounts']['auto'] === 1, 'Automatik-Modus in der Instanzauswertung erkannt');
+
 unset($GLOBALS['testValues'][10]);
 $instance->MessageSink(time(), 10, VM_DELETE, []);
 verify($instance->status === 202, 'Fehlender Istwert führt zu Fehlerstatus');

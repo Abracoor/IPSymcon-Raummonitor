@@ -50,7 +50,7 @@ final class RaummonitorModel
         $missing = [];
         $groups = [];
         $seenRooms = [];
-        $count = ['comfort' => 0, 'standby' => 0, 'night' => 0, 'frost' => 0, 'unknown' => 0];
+        $count = ['comfort' => 0, 'standby' => 0, 'night' => 0, 'frost' => 0, 'auto' => 0, 'unknown' => 0];
         $openWindows = 0;
         $cache = [];
         // Spalten gelten global für alle Gruppen. Ihre Sichtbarkeit hängt
@@ -128,6 +128,11 @@ final class RaummonitorModel
         if (count($mapping) !== 4) {
             $configErrors[] = 'Die vier Betriebsarten müssen unterschiedliche Integerwerte besitzen';
         }
+        // Der KNX-Standard definiert 0 als Automatik. Eine ausdrücklich
+        // konfigurierte Zuordnung von 0 zu einem der vier Modi hat Vorrang.
+        if (!array_key_exists(0, $mapping)) {
+            $mapping[0] = ['kind' => 'auto', 'label' => 'Automatik'];
+        }
 
         foreach ($rooms as $index => $room) {
             if (!is_array($room)) {
@@ -172,6 +177,10 @@ final class RaummonitorModel
                 $mode = self::mode($raw, $mapping);
                 if ($mode === null) {
                     $mode = ['kind' => 'unknown', 'label' => 'Unbekannt'];
+                    $missing[$modeID] = true;
+                }
+                // Unbekannte numerische Codes sind keine gültigen Statuswerte.
+                if ($mode['kind'] === 'unknown') {
                     $missing[$modeID] = true;
                 }
                 $count[$mode['kind']]++;
@@ -391,12 +400,14 @@ final class RaummonitorModel
         }
         $number = self::number($raw);
         if ($number !== null && floor($number) === $number) {
-            return $mapping[(int) $number] ?? ['kind' => 'unknown', 'label' => (string) (int) $number];
+            return $mapping[(int) $number]
+                ?? ['kind' => 'unknown', 'label' => 'Unbekannt (' . (int) $number . ')'];
         }
         if (!is_string($raw)) {
             return null;
         }
         return match (strtolower(trim($raw))) {
+            'automatik', 'auto' => ['kind' => 'auto', 'label' => 'Automatik'],
             'komfort', 'comfort' => ['kind' => 'comfort', 'label' => 'Komfort'],
             'standby' => ['kind' => 'standby', 'label' => 'Standby'],
             'nacht', 'night', 'eco', 'economy' => ['kind' => 'night', 'label' => 'Nacht'],
