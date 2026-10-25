@@ -11,7 +11,8 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
 ## Funktionen
 
 - Responsive HTML-SDK-Kachel mit heller und dunkler Symcon-Darstellung.
-- Farbige Statusanzeigen mit an die Theme-Textfarbe angepasstem Kontrast.
+- Farbige Statusanzeigen mit separaten Farbpaletten für das helle und dunkle
+  Symcon-Design; das aktive Design wird automatisch erkannt.
 - Kennzahlen: konfigurierte Räume, offene Fenster, Komfort, Standby, Nacht,
   Frostschutz.
 - Tabelle nach Raumname sortiert, optional nach Gruppen/Etagen gegliedert.
@@ -226,6 +227,7 @@ keinen laufenden Symcon-Server:
 ```bash
 php tests/run.php
 php tests/module_smoke.php
+node tests/theme_test.js    # optionaler Test der Design-Erkennung
 ```
 
 Alle PHP-Dateien können zusätzlich mit `php -l` und alle JSON-Dateien mit
@@ -251,7 +253,8 @@ IPSymcon-Raummonitor/
 │   └── beispielkonfiguration.json
 └── tests/
     ├── run.php
-    └── module_smoke.php
+    ├── module_smoke.php
+    └── theme_test.js
 ```
 
 ## Herkunft und Lizenz

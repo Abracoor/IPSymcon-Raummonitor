@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.12 – Getrennte Farbpaletten für helles und dunkles Design (25.10.2026)
+
+- Im hellen Symcon-Design wieder die kräftigen Originalfarben aus Build 10.
+- Im dunklen Design bleiben die aufgehellten, kontrastreicheren Farben aus
+  Build 11 erhalten.
+- Erkennung über die tatsächlich berechnete Textfarbe der Kachel, nicht nur
+  über die Betriebssystem-Einstellung zum Farbschema.
+- Keine Änderungen an Messwerten, Funktionen oder Konfiguration.
+
 ## 1.0.11 – Besserer Farbkontrast im dunklen Design (25.10.2026)
 
 - Grüne, gelbe, blaue und graue Statusfarben werden aus der jeweiligen

@@ -99,10 +99,14 @@ verify(!str_contains($html, '<script>alert(1)</script>'), 'Raumname kann kein Sc
 verify(str_contains($html, '\\u003Cscript\\u003E'), 'HTML-Tag wird im JSON geschützt');
 verify(str_contains($html, 'overflow-x: auto'), 'Tabelle bleibt horizontal scrollbar');
 verify(!str_contains($html, 'position: sticky'), 'Keine überlagernde fixe Raumspalte bei schmalen Kacheln');
-verify(str_contains($html, '--rm-green: color-mix(in srgb, #207c4c 45%, var(--rm-text))'),
-    'Komfort- und Fensterfarbe passen sich der Textfarbe des Symcon-Themes an');
+verify(str_contains($html, '--rm-green: #207c4c'),
+    'Kräftige Originalfarbe für Komfort und Fenster im hellen Design');
+verify(str_contains($html, '.rm-root.rm-dark'),
+    'Eigene Farbpalette für das dunkle Symcon-Design');
 verify(str_contains($html, '--rm-blue: color-mix(in srgb, #2466b0 45%, var(--rm-text))'),
-    'Blaue Statusindikatoren verwenden die adaptive Farbpalette');
+    'Blaue Statusindikatoren sind im dunklen Design heller');
+verify(str_contains($html, "root.classList.toggle('rm-dark', rmIsLightText(getComputedStyle(root).color))"),
+    'Aktuelles Symcon-Theme wird anhand der tatsächlichen Textfarbe erkannt');
 
 $instance->Update();
 verify(count($instance->updates) === 1, 'Unveränderter Zustand wird nicht erneut gesendet');

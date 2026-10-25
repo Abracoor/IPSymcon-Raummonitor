@@ -5,13 +5,11 @@
         --rm-subtle: color-mix(in srgb, var(--rm-text) 62%, transparent);
         --rm-line: color-mix(in srgb, var(--rm-text) 16%, transparent);
         --rm-soft: color-mix(in srgb, var(--rm-text) 6%, transparent);
-        /* Statusfarben mit der tatsächlichen Textfarbe des Symcon-Themes
-           mischen: im hellen Design bleiben sie dunkel/kräftig, im dunklen
-           werden sie aufgehellt. Funktioniert auch bei manuellem Theme-Wechsel. */
-        --rm-green: color-mix(in srgb, #207c4c 45%, var(--rm-text));
-        --rm-amber: color-mix(in srgb, #986307 45%, var(--rm-text));
-        --rm-blue: color-mix(in srgb, #2466b0 45%, var(--rm-text));
-        --rm-gray: color-mix(in srgb, #667085 45%, var(--rm-text));
+        /* Kräftige Originalfarben aus Build 10 für das helle Design. */
+        --rm-green: #207c4c;
+        --rm-amber: #986307;
+        --rm-blue: #2466b0;
+        --rm-gray: #667085;
         color: var(--rm-text);
         width: 100%;
         min-height: 100%;
@@ -20,6 +18,13 @@
         font: inherit;
         scrollbar-width: thin;
         container-type: inline-size;
+    }
+    /* Helle Statusfarben aus Build 11 nur für das dunkle Symcon-Theme. */
+    .rm-root.rm-dark {
+        --rm-green: color-mix(in srgb, #207c4c 45%, var(--rm-text));
+        --rm-amber: color-mix(in srgb, #986307 45%, var(--rm-text));
+        --rm-blue: color-mix(in srgb, #2466b0 45%, var(--rm-text));
+        --rm-gray: color-mix(in srgb, #667085 45%, var(--rm-text));
     }
     .rm-root *, .rm-root *::before, .rm-root *::after { box-sizing: border-box; }
     .rm-content { padding: .7rem; }
@@ -84,6 +89,25 @@
 </div>
 <script>
     'use strict';
+
+    /** Das tatsächlich verwendete Symcon-Theme anhand seiner Textfarbe bestimmen.
+     * Anders als prefers-color-scheme berücksichtigt dies die manuelle
+     * Designauswahl in der Kachelvisualisierung. */
+    function rmIsLightText(cssColor) {
+        const match = /^rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i.exec(cssColor);
+        if (!match) return false;
+        const channels = match.slice(1, 4).map(value => Number(value) / 255);
+        if (channels.some(value => !Number.isFinite(value) || value < 0 || value > 1)) return false;
+        const linear = channels.map(value => value <= 0.04045
+            ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4));
+        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2] > 0.45;
+    }
+
+    function rmSyncTheme() {
+        const root = document.getElementById('rm-root');
+        if (!root) return;
+        root.classList.toggle('rm-dark', rmIsLightText(getComputedStyle(root).color));
+    }
 
     /* Nur DOM-Knoten mit textContent erzeugen: Namen aus Symcon sind nie HTML. */
     function rmNode(tag, className, textValue) {
@@ -229,6 +253,7 @@
 
     /** HTML-SDK: Symcon ruft diese globale Funktion bei neuen Werten auf. */
     function handleMessage(payload) {
+        rmSyncTheme();
         let data;
         try { data = typeof payload === 'string' ? JSON.parse(payload) : payload; }
         catch (error) { return; }
