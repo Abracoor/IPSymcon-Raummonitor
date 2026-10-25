@@ -1,0 +1,12 @@
+{
+    "id": "{6DF5C3FA-E292-4327-8F84-BB4C35F7D751}",
+    "name": "Raummonitor",
+    "type": 3,
+    "vendor": "",
+    "aliases": ["Raummonitor", "Raumklima-Monitor"],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "RMON",
+    "url": "https://github.com/Abracoor/IPSymcon-Raummonitor"
+}

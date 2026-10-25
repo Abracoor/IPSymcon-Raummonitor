@@ -1,0 +1,76 @@
+{
+    "elements": [
+        {
+            "type": "Label",
+            "caption": "Raummonitor – beliebige Symcon-Variablen, keine KNX-Herstellerbindung. Raumname und Isttemperatur sind Pflicht; alle anderen Zuordnungen sind optional."
+        },
+        {
+            "type": "List",
+            "name": "Rooms",
+            "caption": "Räume und Messwerte",
+            "rowCount": 10,
+            "add": true,
+            "delete": true,
+            "changeOrder": true,
+            "columns": [
+                {"name": "Group", "caption": "Gruppe / Etage", "width": "130px", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "Room", "caption": "Raumname *", "width": "180px", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "ActualTempID", "caption": "Isttemperatur *", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "SetpointTempID", "caption": "Solltemperatur", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "OperationModeID", "caption": "Betriebsart", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "WindowID", "caption": "Fensterkontakt", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "WindowInverted", "caption": "Fenster invertieren", "width": "130px", "add": false, "edit": {"type": "CheckBox"}},
+                {"name": "ValveID", "caption": "Ventilstellung", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "ValveMax", "caption": "Ventil-Rohwert für 100 %", "width": "160px", "add": 100, "edit": {"type": "NumberSpinner", "minimum": 1, "maximum": 65535}},
+                {"name": "LightCountID", "caption": "Lichtanzahl (fertiger Wert)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "HumidityID", "caption": "Feuchte (%)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "CO2ID", "caption": "CO₂ (ppm)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "DewPointID", "caption": "Taupunkt (°C)", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "HeatingCoolingID", "caption": "Heizen / Kühlen", "width": "200px", "add": 0, "edit": {"type": "SelectVariable"}}
+            ]
+        },
+        {
+            "type": "Label",
+            "caption": "Lichter: Pro Leuchte eine Zeile in der zweiten Liste eintragen; Gruppe und Raum müssen exakt einer Zeile oben entsprechen. Eine vorhandene Lichtanzahl-Variable im Raum hat Vorrang."
+        },
+        {
+            "type": "List",
+            "name": "Lights",
+            "caption": "Lichtvariablen je Raum (optional)",
+            "rowCount": 8,
+            "add": true,
+            "delete": true,
+            "changeOrder": true,
+            "columns": [
+                {"name": "Group", "caption": "Gruppe / Etage", "width": "140px", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "Room", "caption": "Raumname", "width": "180px", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "VariableID", "caption": "Schaltstatus", "width": "240px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "Invert", "caption": "Invertieren", "width": "110px", "add": false, "edit": {"type": "CheckBox"}}
+            ]
+        },
+        {"type": "Label", "caption": "KNX DPT 20.102 (HVAC-Modus) ist standardmäßig 0=Komfort, 1=Standby, 2=Nacht, 3=Frostschutz. Andere Integer-Belegungen hier anpassen."},
+        {
+            "type": "RowLayout",
+            "items": [
+                {"type": "NumberSpinner", "name": "ComfortValue", "caption": "Komfort", "minimum": -32768, "maximum": 32767},
+                {"type": "NumberSpinner", "name": "StandbyValue", "caption": "Standby", "minimum": -32768, "maximum": 32767},
+                {"type": "NumberSpinner", "name": "NightValue", "caption": "Nacht", "minimum": -32768, "maximum": 32767},
+                {"type": "NumberSpinner", "name": "FrostValue", "caption": "Frostschutz", "minimum": -32768, "maximum": 32767}
+            ]
+        },
+        {"type": "CheckBox", "name": "CoolingWhenTrue", "caption": "Heizen/Kühlen: true bzw. 1 bedeutet Kühlen"},
+        {"type": "CheckBox", "name": "GroupRooms", "caption": "Räume nach Gruppe / Etage zusammenfassen"},
+        {"type": "CheckBox", "name": "ShowExtraColumns", "caption": "Optionale Klima-Spalten (Feuchte, CO₂, Taupunkt, Heizen/Kühlen) anzeigen"},
+        {"type": "NumberSpinner", "name": "RefreshSeconds", "caption": "Zusätzliche zyklische Aktualisierung in Sekunden (0 = nur bei Änderung)", "minimum": 0, "maximum": 3600}
+    ],
+    "actions": [
+        {"type": "Button", "caption": "Jetzt aktualisieren", "onClick": "RMON_Update($id);"},
+        {"type": "Label", "caption": "Fehlende und ungültige Variablen werden als – angezeigt und führen zu einer Statusmeldung der Instanz. Das Modul schaltet selbst keine Geräte."}
+    ],
+    "status": [
+        {"code": 102, "icon": "active", "caption": "Raummonitor aktiv"},
+        {"code": 104, "icon": "inactive", "caption": "Keine Räume konfiguriert"},
+        {"code": 201, "icon": "error", "caption": "Konfiguration enthält Fehler"},
+        {"code": 202, "icon": "error", "caption": "Mindestens ein Messwert ist nicht verfügbar"}
+    ]
+}

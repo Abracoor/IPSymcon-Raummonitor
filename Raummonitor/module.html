@@ -1,0 +1,209 @@
+<style>
+    /* Symcon liefert die Grundfarben. Alle Flächen passen sich dem Theme an. */
+    .rm-root {
+        --rm-text: var(--content-color, #293342);
+        --rm-subtle: color-mix(in srgb, var(--rm-text) 62%, transparent);
+        --rm-line: color-mix(in srgb, var(--rm-text) 16%, transparent);
+        --rm-soft: color-mix(in srgb, var(--rm-text) 6%, transparent);
+        --rm-green: #207c4c;
+        --rm-amber: #986307;
+        --rm-blue: #2466b0;
+        --rm-gray: #667085;
+        color: var(--rm-text);
+        width: 100%;
+        min-height: 100%;
+        overflow: auto;
+        box-sizing: border-box;
+        font: inherit;
+        scrollbar-width: thin;
+        container-type: inline-size;
+    }
+    .rm-root *, .rm-root *::before, .rm-root *::after { box-sizing: border-box; }
+    .rm-content { padding: .7rem; }
+    .rm-head { display: flex; justify-content: space-between; align-items: baseline; gap: .75rem; margin-bottom: .65rem; }
+    .rm-head strong { font-size: 1.05em; font-weight: 700; }
+    .rm-head small { color: var(--rm-subtle); font-size: .79em; }
+    .rm-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem; margin-bottom: .8rem; }
+    .rm-stat { min-width: 0; padding: .6rem .68rem; border: 1px solid var(--rm-line); border-radius: .65rem; background: var(--rm-soft); }
+    .rm-stat-label { color: var(--rm-subtle); font-size: .76em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .rm-stat-value { font-variant-numeric: tabular-nums; font-size: 1.55em; line-height: 1.22; font-weight: 650; }
+    .rm-stat[data-kind="window"] .rm-stat-value { color: var(--rm-blue); }
+    .rm-stat[data-kind="comfort"] .rm-stat-value { color: var(--rm-green); }
+    .rm-stat[data-kind="standby"] .rm-stat-value { color: var(--rm-amber); }
+    .rm-stat[data-kind="night"] .rm-stat-value { color: var(--rm-gray); }
+    .rm-stat[data-kind="frost"] .rm-stat-value { color: var(--rm-blue); }
+    .rm-warning { margin-bottom: .7rem; padding: .4rem .55rem; color: var(--rm-amber); border: 1px dashed currentColor; border-radius: .45rem; font-size: .8em; }
+    .rm-empty { text-align: center; padding: 1.3rem .6rem; color: var(--rm-subtle); }
+    .rm-group { margin-top: .8rem; }
+    .rm-group-heading { display: flex; align-items: center; gap: .45rem; margin-bottom: .3rem; font-weight: 700; }
+    .rm-group-count { font-size: .75em; color: var(--rm-subtle); font-weight: normal; }
+    .rm-table-wrap { overflow-x: auto; border: 1px solid var(--rm-line); border-radius: .65rem; scrollbar-width: thin; }
+    .rm-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: .85em; }
+    .rm-table.rm-extras { min-width: 1050px; }
+    .rm-table th, .rm-table td { text-align: left; padding: .53rem .58rem; border-bottom: 1px solid var(--rm-line); white-space: nowrap; }
+    .rm-table th { font-size: .78em; font-weight: 650; color: var(--rm-subtle); background: var(--rm-soft); }
+    .rm-table tr:last-child td { border-bottom: 0; }
+    .rm-table tr:hover td { background: var(--rm-soft); }
+    .rm-table th:first-child, .rm-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--rm-sticky, var(--rm-base, transparent)); font-weight: 600; }
+    .rm-table th:first-child { z-index: 2; background: var(--rm-head-bg, var(--rm-soft)); }
+    .rm-table td:first-child { background: var(--rm-base, var(--rm-soft)); }
+    .rm-value { font-variant-numeric: tabular-nums; }
+    .rm-dash { color: var(--rm-subtle); }
+    .rm-pill { display: inline-block; border-radius: 999px; border: 1px solid transparent; padding: .22rem .52rem; line-height: 1.35; font-size: .91em; font-weight: 650; }
+    .rm-pill[data-state="comfort"], .rm-pill[data-state="closed"] { color: var(--rm-green); border-color: color-mix(in srgb, var(--rm-green) 28%, transparent); background: color-mix(in srgb, var(--rm-green) 13%, transparent); }
+    .rm-pill[data-state="standby"], .rm-pill[data-state="light-on"] { color: var(--rm-amber); border-color: color-mix(in srgb, var(--rm-amber) 28%, transparent); background: color-mix(in srgb, var(--rm-amber) 13%, transparent); }
+    .rm-pill[data-state="night"] { color: var(--rm-gray); border-color: color-mix(in srgb, var(--rm-gray) 28%, transparent); background: color-mix(in srgb, var(--rm-gray) 13%, transparent); }
+    .rm-pill[data-state="frost"], .rm-pill[data-state="open"] { color: var(--rm-blue); border-color: color-mix(in srgb, var(--rm-blue) 28%, transparent); background: color-mix(in srgb, var(--rm-blue) 13%, transparent); }
+    .rm-pill[data-state="unknown"], .rm-pill[data-state="light-off"] { color: var(--rm-subtle); border-color: var(--rm-line); background: var(--rm-soft); }
+    .rm-valve { display: flex; align-items: center; gap: .35rem; }
+    .rm-bar { height: .4rem; width: 2.25rem; border-radius: 999px; background: var(--rm-line); overflow: hidden; }
+    .rm-bar > span { display: block; height: 100%; background: var(--rm-green); border-radius: 999px; }
+    @container (min-width: 520px) { .rm-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @container (min-width: 800px) { .rm-stats { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+    @container (max-width: 320px) {
+        .rm-head small { display: none; }
+        .rm-stat { padding: .4rem .48rem; }
+        .rm-stat-value { font-size: 1.24em; }
+        .rm-stat-label { font-size: .7em; }
+        .rm-content { padding: .38rem; }
+    }
+    @media (prefers-reduced-motion: reduce) { .rm-root * { scroll-behavior: auto !important; } }
+</style>
+<div class="rm-root" id="rm-root">
+    <div class="rm-content">
+        <div class="rm-head"><strong>Raummonitor</strong><small>Raumklima · Heizung · Fenster</small></div>
+        <div class="rm-stats" id="rm-stats" aria-label="Zusammenfassung"></div>
+        <div id="rm-warning" class="rm-warning" hidden></div>
+        <div id="rm-groups"></div>
+    </div>
+</div>
+<script>
+    'use strict';
+
+    /* Nur DOM-Knoten mit textContent erzeugen: Namen aus Symcon sind nie HTML. */
+    function rmNode(tag, className, textValue) {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (textValue !== undefined) node.textContent = String(textValue);
+        return node;
+    }
+
+    function rmNumber(value, digits, suffix) {
+        if (typeof value !== 'number' || !Number.isFinite(value)) return '–';
+        return value.toLocaleString('de-DE', {minimumFractionDigits: digits, maximumFractionDigits: digits}) + (suffix || '');
+    }
+
+    function rmStat(label, value, kind) {
+        const item = rmNode('div', 'rm-stat');
+        if (kind) item.dataset.kind = kind;
+        item.append(rmNode('div', 'rm-stat-label', label), rmNode('div', 'rm-stat-value', value));
+        return item;
+    }
+
+    function rmPill(label, state) {
+        const element = rmNode('span', 'rm-pill', label);
+        element.dataset.state = ['comfort', 'standby', 'night', 'frost', 'unknown', 'open', 'closed', 'light-on', 'light-off'].includes(state)
+            ? state : 'unknown';
+        return element;
+    }
+
+    function rmCell(row, content, className) {
+        const cell = rmNode('td', className || '');
+        if (content instanceof Node) cell.append(content);
+        else cell.textContent = String(content);
+        row.append(cell);
+        return cell;
+    }
+
+    function rmValve(percent) {
+        if (typeof percent !== 'number' || !Number.isFinite(percent)) return rmNode('span', 'rm-dash', '–');
+        const wrapper = rmNode('div', 'rm-valve');
+        const bar = rmNode('span', 'rm-bar');
+        const fill = rmNode('span');
+        fill.style.width = Math.max(0, Math.min(100, percent)) + '%';
+        bar.append(fill);
+        wrapper.append(bar, rmNode('span', 'rm-value', rmNumber(percent, 0, ' %')));
+        return wrapper;
+    }
+
+    function rmRenderGroup(group, showExtras, showGroups) {
+        const section = rmNode('section', 'rm-group');
+        const rooms = Array.isArray(group.rooms) ? group.rooms : [];
+        if (showGroups) {
+            const heading = rmNode('div', 'rm-group-heading', group.name || 'Ohne Gruppe');
+            heading.append(rmNode('span', 'rm-group-count', '(' + rooms.length + ')'));
+            section.append(heading);
+        }
+        const wrapper = rmNode('div', 'rm-table-wrap');
+        const table = rmNode('table', 'rm-table' + (showExtras ? ' rm-extras' : ''));
+        const thead = rmNode('thead');
+        const header = rmNode('tr');
+        const labels = ['Raum', 'Ist', 'Soll', 'Licht', 'Modus', 'Fenster', 'Ventil'];
+        if (showExtras) labels.push('Feuchte', 'CO₂', 'Taupunkt', 'Heizen/Kühlen');
+        labels.forEach(label => header.append(rmNode('th', '', label)));
+        thead.append(header);
+        const tbody = rmNode('tbody');
+        rooms.forEach(room => {
+            const tr = rmNode('tr');
+            rmCell(tr, room.name || '–');
+            rmCell(tr, rmNumber(room.actual, 1, ' °C'), 'rm-value');
+            rmCell(tr, rmNumber(room.setpoint, 1, ' °C'), 'rm-value');
+            const lights = room.lights;
+            const lightsPill = typeof lights === 'number'
+                ? rmPill(lights + (room.lightsIncomplete ? ' *' : ''), lights > 0 ? 'light-on' : 'light-off')
+                : rmNode('span', 'rm-dash', '–');
+            if (room.lightsIncomplete) lightsPill.title = 'Mindestens ein Lichtstatus fehlt';
+            rmCell(tr, lightsPill);
+            rmCell(tr, room.mode && room.mode.label
+                ? rmPill(room.mode.label, room.mode.kind) : rmNode('span', 'rm-dash', '–'));
+            rmCell(tr, room.window === true
+                ? rmPill('offen', 'open') : room.window === false
+                    ? rmPill('geschlossen', 'closed') : rmNode('span', 'rm-dash', '–'));
+            rmCell(tr, rmValve(room.valve));
+            if (showExtras) {
+                rmCell(tr, rmNumber(room.humidity, 0, ' %'), 'rm-value');
+                rmCell(tr, rmNumber(room.co2, 0, ' ppm'), 'rm-value');
+                rmCell(tr, rmNumber(room.dewPoint, 1, ' °C'), 'rm-value');
+                rmCell(tr, room.heatingCooling || '–');
+            }
+            tbody.append(tr);
+        });
+        table.append(thead, tbody);
+        wrapper.append(table);
+        section.append(wrapper);
+        return section;
+    }
+
+    /** HTML-SDK: Symcon ruft diese globale Funktion bei neuen Werten auf. */
+    function handleMessage(payload) {
+        let data;
+        try { data = typeof payload === 'string' ? JSON.parse(payload) : payload; }
+        catch (error) { return; }
+        if (!data || !Array.isArray(data.groups)) return;
+
+        const stats = document.getElementById('rm-stats');
+        const warning = document.getElementById('rm-warning');
+        const groups = document.getElementById('rm-groups');
+        if (!stats || !warning || !groups) return;
+
+        const modes = data.modeCounts || {};
+        stats.replaceChildren(
+            rmStat('Räume', data.totalRooms || 0, 'rooms'),
+            rmStat('Fenster offen', data.openWindows || 0, 'window'),
+            rmStat('Komfort', modes.comfort || 0, 'comfort'),
+            rmStat('Standby', modes.standby || 0, 'standby'),
+            rmStat('Nacht', modes.night || 0, 'night'),
+            rmStat('Frostschutz', modes.frost || 0, 'frost')
+        );
+        const issueCount = Number(data.issueCount) || 0;
+        warning.hidden = issueCount === 0;
+        warning.textContent = issueCount === 1
+            ? '1 Konfigurations- oder Messwertproblem – siehe Instanzstatus.'
+            : issueCount + ' Konfigurations- oder Messwertprobleme – siehe Instanzstatus.';
+
+        const fragment = document.createDocumentFragment();
+        if (!data.totalRooms) fragment.append(rmNode('div', 'rm-empty', 'Noch keine Räume konfiguriert.'));
+        else data.groups.forEach(group => fragment.append(rmRenderGroup(group, Boolean(data.showExtras), Boolean(data.showGroups))));
+        groups.replaceChildren(fragment);
+    }
+</script>

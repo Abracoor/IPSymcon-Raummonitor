@@ -1,0 +1,25 @@
+{
+    "Rooms": [
+        {
+            "Group": "Erdgeschoss",
+            "Room": "Wohnzimmer",
+            "ActualTempID": 12345,
+            "SetpointTempID": 12346,
+            "OperationModeID": 12347,
+            "WindowID": 12348,
+            "WindowInverted": false,
+            "ValveID": 12349,
+            "ValveMax": 100,
+            "LightCountID": 0,
+            "HumidityID": 0,
+            "CO2ID": 0,
+            "DewPointID": 0,
+            "HeatingCoolingID": 0
+        }
+    ],
+    "Lights": [
+        {"Group": "Erdgeschoss", "Room": "Wohnzimmer", "VariableID": 12350, "Invert": false},
+        {"Group": "Erdgeschoss", "Room": "Wohnzimmer", "VariableID": 12351, "Invert": false}
+    ],
+    "Note": "Sämtliche IDs sind fiktive Beispiele; vor Verwendung durch echte Symcon-Variablen-IDs ersetzen."
+}
