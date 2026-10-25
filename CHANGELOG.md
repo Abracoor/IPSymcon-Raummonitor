@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.11 – Besserer Farbkontrast im dunklen Design (25.10.2026)
+
+- Grüne, gelbe, blaue und graue Statusfarben werden aus der jeweiligen
+  Grundfarbe und der Textfarbe des aktiven Symcon-Themes gemischt.
+- Komfort- und Fensterindikatoren, Kennzahlen sowie Betriebsarten bleiben
+  so im hellen Design kräftig und sind im dunklen Design heller lesbar.
+- Keine Änderungen an Daten, Funktionen oder gespeicherten Einstellungen.
+
 ## 1.0.10 – Überlagerung in schmalen Kacheln behoben (25.10.2026)
 
 - Die Raumspalte bleibt beim horizontalen Scrollen nicht mehr fixiert.

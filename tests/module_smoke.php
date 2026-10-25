@@ -99,6 +99,10 @@ verify(!str_contains($html, '<script>alert(1)</script>'), 'Raumname kann kein Sc
 verify(str_contains($html, '\\u003Cscript\\u003E'), 'HTML-Tag wird im JSON geschützt');
 verify(str_contains($html, 'overflow-x: auto'), 'Tabelle bleibt horizontal scrollbar');
 verify(!str_contains($html, 'position: sticky'), 'Keine überlagernde fixe Raumspalte bei schmalen Kacheln');
+verify(str_contains($html, '--rm-green: color-mix(in srgb, #207c4c 45%, var(--rm-text))'),
+    'Komfort- und Fensterfarbe passen sich der Textfarbe des Symcon-Themes an');
+verify(str_contains($html, '--rm-blue: color-mix(in srgb, #2466b0 45%, var(--rm-text))'),
+    'Blaue Statusindikatoren verwenden die adaptive Farbpalette');
 
 $instance->Update();
 verify(count($instance->updates) === 1, 'Unveränderter Zustand wird nicht erneut gesendet');

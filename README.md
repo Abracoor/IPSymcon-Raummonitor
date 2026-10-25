@@ -11,6 +11,7 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
 ## Funktionen
 
 - Responsive HTML-SDK-Kachel mit heller und dunkler Symcon-Darstellung.
+- Farbige Statusanzeigen mit an die Theme-Textfarbe angepasstem Kontrast.
 - Kennzahlen: konfigurierte Räume, offene Fenster, Komfort, Standby, Nacht,
   Frostschutz.
 - Tabelle nach Raumname sortiert, optional nach Gruppen/Etagen gegliedert.

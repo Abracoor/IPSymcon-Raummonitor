@@ -5,10 +5,13 @@
         --rm-subtle: color-mix(in srgb, var(--rm-text) 62%, transparent);
         --rm-line: color-mix(in srgb, var(--rm-text) 16%, transparent);
         --rm-soft: color-mix(in srgb, var(--rm-text) 6%, transparent);
-        --rm-green: #207c4c;
-        --rm-amber: #986307;
-        --rm-blue: #2466b0;
-        --rm-gray: #667085;
+        /* Statusfarben mit der tatsächlichen Textfarbe des Symcon-Themes
+           mischen: im hellen Design bleiben sie dunkel/kräftig, im dunklen
+           werden sie aufgehellt. Funktioniert auch bei manuellem Theme-Wechsel. */
+        --rm-green: color-mix(in srgb, #207c4c 45%, var(--rm-text));
+        --rm-amber: color-mix(in srgb, #986307 45%, var(--rm-text));
+        --rm-blue: color-mix(in srgb, #2466b0 45%, var(--rm-text));
+        --rm-gray: color-mix(in srgb, #667085 45%, var(--rm-text));
         color: var(--rm-text);
         width: 100%;
         min-height: 100%;
