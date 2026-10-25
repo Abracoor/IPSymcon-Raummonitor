@@ -118,6 +118,7 @@
         },
         {"type": "CheckBox", "name": "CoolingWhenTrue", "caption": "Heizen/Kühlen: true bzw. 1 bedeutet Kühlen"},
         {"type": "CheckBox", "name": "GroupRooms", "caption": "Räume nach Gruppe / Etage zusammenfassen"},
+        {"type": "CheckBox", "name": "AutoColumns", "caption": "Tabellenspalten automatisch nach verwendeten Variablen anzeigen (Standard)"},
         {"type": "CheckBox", "name": "ShowExtraColumns", "caption": "Optionale Klima-Spalten (Feuchte, CO₂, Taupunkt, Heizen/Kühlen) anzeigen"},
         {"type": "NumberSpinner", "name": "RefreshSeconds", "caption": "Zusätzliche zyklische Aktualisierung in Sekunden (0 = nur bei Änderung)", "minimum": 0, "maximum": 3600}
     ],

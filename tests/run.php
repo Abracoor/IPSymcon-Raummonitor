@@ -56,6 +56,12 @@ check($data['openWindows'], 0, 'Fensterstatus inklusive Invertierung');
 check($data['modeCounts']['comfort'], 1, 'Komfort erkannt');
 check($data['modeCounts']['frost'], 1, 'Frostschutz erkannt');
 check($data['modeCounts']['night'], 1, 'Nacht erkannt');
+check($data['columns']['setpoint'], true, 'Soll-Spalte sichtbar bei zugeordneter Variable');
+check($data['columns']['lights'], true, 'Licht-Spalte sichtbar bei vorhandener Lichtliste');
+check($data['columns']['mode'], true, 'Betriebsart-Spalte sichtbar bei zugeordneter Variable');
+check($data['columns']['window'], true, 'Fenster-Spalte sichtbar bei vorhandenem Einzelkontakt');
+check($data['columns']['valve'], true, 'Ventil-Spalte sichtbar bei zugeordneter Variable');
+check($data['columns']['humidity'], false, 'Zusatzspalten ohne Freigabe verborgen');
 check($data['groups'][0]['rooms'][1]['mode']['label'], 'Komfort', 'KNX DPT 20.102: 1 = Komfort');
 check($data['groups'][0]['rooms'][0]['mode']['label'], 'Frostschutz', 'KNX DPT 20.102: 4 = Frostschutz');
 check($data['groups'][0]['rooms'][0]['name'], 'Bad', 'Alphabetisch innerhalb EG');
@@ -76,6 +82,7 @@ check($data['openWindows'], 1, 'Ein geöffnetes Fenster zählt als ein Kontakt')
 check($data['groups'][0]['rooms'][1]['windowCount'], 2, 'Alter Einzelkontakt und Fensterliste zusammengefasst');
 check($data['groups'][0]['rooms'][1]['openWindowCount'], 1, 'Ein von zwei Fenstern geöffnet');
 check($data['groups'][0]['rooms'][1]['window'], true, 'Ein geöffnetes Fenster macht den Raumstatus offen');
+check($data['columns']['window'], true, 'Zusätzliche Fensterlisten aktivieren globale Fensterspalte');
 check(in_array(22, RaummonitorModel::configuredIDs($rooms, $lights, $windows), true), true,
     'Zusätzlicher Fensterkontakt wird für Updates abonniert');
 
@@ -125,5 +132,32 @@ check(count($data['configurationErrors']) > 0, true, 'Fehlende Pflichtzuordnung 
 
 $data = RaummonitorModel::build($rooms, [], ['GroupRooms' => false], $reader);
 check(count($data['groups']), 1, 'Ohne Gruppen eine Gesamttabelle');
+
+$onlyActual = [['Group' => 'EG', 'Room' => 'Minimal', 'ActualTempID' => 1]];
+$data = RaummonitorModel::build($onlyActual, [], [], $reader);
+check(array_filter($data['columns']), [], 'Nur Pflichtdaten: alle optionalen Spalten ausgeblendet');
+
+$data = RaummonitorModel::build($onlyActual, [], ['AutoColumns' => false], $reader);
+check($data['columns']['lights'], true, 'Manuelle Vollansicht zeigt Lichtspalte ohne Verknüpfung');
+check($data['columns']['window'], true, 'Manuelle Vollansicht zeigt Fensterspalte ohne Verknüpfung');
+check($data['columns']['humidity'], false, 'Klima-Zusatzspalten bleiben trotz Vollansicht optional');
+
+$data = RaummonitorModel::build($onlyActual, [],
+    ['AutoColumns' => false, 'ShowExtraColumns' => true], $reader);
+check($data['columns']['co2'], true, 'Vollansicht mit Klima-Freigabe zeigt CO2 auch ohne Zuordnung');
+
+$data = RaummonitorModel::build($onlyActual, [], ['ShowExtraColumns' => true], $reader);
+check($data['columns']['co2'], false, 'Automatik blendet unbenutzte Klima-Spalten aus');
+
+$withExtras = [['Group' => 'OG', 'Room' => 'Klima', 'ActualTempID' => 1,
+    'SetpointTempID' => 999, 'HumidityID' => 18]];
+$data = RaummonitorModel::build($withExtras, [], ['ShowExtraColumns' => true], $reader);
+check($data['columns']['setpoint'], true, 'Fehlender Soll-Messwert blendet konfigurierte Spalte nicht aus');
+check($data['columns']['humidity'], true, 'Konfigurierte Klimaspalte wird bei Freigabe sichtbar');
+check($data['columns']['co2'], false, 'Unbenutzte Klimaspalte bleibt verborgen');
+
+$data = RaummonitorModel::build($onlyActual, [], [], $reader,
+    [['Group' => 'EG', 'Room' => 'Minimal', 'VariableID' => 22]]);
+check($data['columns']['window'], true, 'Fensterliste allein aktiviert Spalte');
 
 echo "\nAlle Modelltests bestanden.\n";

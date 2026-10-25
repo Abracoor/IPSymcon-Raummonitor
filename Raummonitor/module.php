@@ -31,6 +31,7 @@ class Raummonitor extends IPSModuleStrict
         $this->RegisterPropertyInteger('FrostValue', 4);
         $this->RegisterPropertyBoolean('CoolingWhenTrue', true);
         $this->RegisterPropertyBoolean('GroupRooms', true);
+        $this->RegisterPropertyBoolean('AutoColumns', true);
         $this->RegisterPropertyBoolean('ShowExtraColumns', false);
         $this->RegisterPropertyInteger('RefreshSeconds', 0);
 
@@ -197,6 +198,7 @@ class Raummonitor extends IPSModuleStrict
             'FrostValue' => $this->ReadPropertyInteger('FrostValue'),
             'CoolingWhenTrue' => $this->ReadPropertyBoolean('CoolingWhenTrue'),
             'GroupRooms' => $this->ReadPropertyBoolean('GroupRooms'),
+            'AutoColumns' => $this->ReadPropertyBoolean('AutoColumns'),
             'ShowExtraColumns' => $this->ReadPropertyBoolean('ShowExtraColumns')
         ];
     }
@@ -211,6 +213,7 @@ class Raummonitor extends IPSModuleStrict
             'groups' => $state['groups'],
             'showGroups' => $state['showGroups'],
             'showExtras' => $state['showExtras'],
+            'columns' => $state['columns'],
             'issueCount' => count($state['configurationErrors']) + count($state['missingIDs'])
         ];
     }

@@ -38,8 +38,8 @@
     .rm-group-heading { display: flex; align-items: center; gap: .45rem; margin-bottom: .3rem; font-weight: 700; }
     .rm-group-count { font-size: .75em; color: var(--rm-subtle); font-weight: normal; }
     .rm-table-wrap { overflow-x: auto; border: 1px solid var(--rm-line); border-radius: .65rem; scrollbar-width: thin; }
-    .rm-table { border-collapse: collapse; width: 100%; min-width: 680px; font-size: .85em; }
-    .rm-table.rm-extras { min-width: 1050px; }
+    /* Die Mindestbreite wird anhand der tatsächlich sichtbaren Spalten gesetzt. */
+    .rm-table { border-collapse: collapse; width: 100%; font-size: .85em; }
     .rm-table th, .rm-table td { text-align: left; padding: .53rem .58rem; border-bottom: 1px solid var(--rm-line); white-space: nowrap; }
     .rm-table th { font-size: .78em; font-weight: 650; color: var(--rm-subtle); background: var(--rm-soft); }
     .rm-table tr:last-child td { border-bottom: 0; }
@@ -148,7 +148,53 @@
         return pill;
     }
 
-    function rmRenderGroup(group, showExtras, showGroups) {
+    // Dieselbe globale Spaltenliste wird für jede Etage verwendet.
+    function rmVisibleColumns(data) {
+        const definitions = [
+            {key: 'name', label: 'Raum', width: 140, required: true},
+            {key: 'actual', label: 'Ist', width: 82, required: true},
+            {key: 'setpoint', label: 'Soll', width: 82},
+            {key: 'lights', label: 'Licht', width: 67},
+            {key: 'mode', label: 'Modus', width: 108},
+            {key: 'window', label: 'Fenster', width: 150},
+            {key: 'valve', label: 'Ventil', width: 112},
+            {key: 'humidity', label: 'Feuchte', width: 94, extra: true},
+            {key: 'co2', label: 'CO₂', width: 96, extra: true},
+            {key: 'dewPoint', label: 'Taupunkt', width: 96, extra: true},
+            {key: 'heatingCooling', label: 'Heizen/Kühlen', width: 124, extra: true}
+        ];
+        const configured = data.columns && typeof data.columns === 'object' ? data.columns : null;
+        return definitions.filter(column => column.required || (configured
+            ? configured[column.key] === true
+            : (!column.extra || Boolean(data.showExtras))));
+    }
+
+    function rmRoomValue(room, key) {
+        switch (key) {
+            case 'name': return room.name || '–';
+            case 'actual': return rmNumber(room.actual, 1, ' °C');
+            case 'setpoint': return rmNumber(room.setpoint, 1, ' °C');
+            case 'lights': {
+                const lights = room.lights;
+                const pill = typeof lights === 'number'
+                    ? rmPill(lights + (room.lightsIncomplete ? ' *' : ''), lights > 0 ? 'light-on' : 'light-off')
+                    : rmNode('span', 'rm-dash', '–');
+                if (room.lightsIncomplete) pill.title = 'Mindestens ein Lichtstatus fehlt';
+                return pill;
+            }
+            case 'mode': return room.mode && room.mode.label
+                ? rmPill(room.mode.label, room.mode.kind) : rmNode('span', 'rm-dash', '–');
+            case 'window': return rmWindow(room);
+            case 'valve': return rmValve(room.valve);
+            case 'humidity': return rmNumber(room.humidity, 0, ' %');
+            case 'co2': return rmNumber(room.co2, 0, ' ppm');
+            case 'dewPoint': return rmNumber(room.dewPoint, 1, ' °C');
+            case 'heatingCooling': return room.heatingCooling || '–';
+            default: return '–';
+        }
+    }
+
+    function rmRenderGroup(group, visibleColumns, showGroups) {
         const section = rmNode('section', 'rm-group');
         const rooms = Array.isArray(group.rooms) ? group.rooms : [];
         if (showGroups) {
@@ -157,35 +203,17 @@
             section.append(heading);
         }
         const wrapper = rmNode('div', 'rm-table-wrap');
-        const table = rmNode('table', 'rm-table' + (showExtras ? ' rm-extras' : ''));
+        const table = rmNode('table', 'rm-table');
+        table.style.minWidth = Math.max(220, visibleColumns.reduce((sum, col) => sum + col.width, 0)) + 'px';
         const thead = rmNode('thead');
         const header = rmNode('tr');
-        const labels = ['Raum', 'Ist', 'Soll', 'Licht', 'Modus', 'Fenster', 'Ventil'];
-        if (showExtras) labels.push('Feuchte', 'CO₂', 'Taupunkt', 'Heizen/Kühlen');
-        labels.forEach(label => header.append(rmNode('th', '', label)));
+        visibleColumns.forEach(column => header.append(rmNode('th', '', column.label)));
         thead.append(header);
         const tbody = rmNode('tbody');
         rooms.forEach(room => {
             const tr = rmNode('tr');
-            rmCell(tr, room.name || '–');
-            rmCell(tr, rmNumber(room.actual, 1, ' °C'), 'rm-value');
-            rmCell(tr, rmNumber(room.setpoint, 1, ' °C'), 'rm-value');
-            const lights = room.lights;
-            const lightsPill = typeof lights === 'number'
-                ? rmPill(lights + (room.lightsIncomplete ? ' *' : ''), lights > 0 ? 'light-on' : 'light-off')
-                : rmNode('span', 'rm-dash', '–');
-            if (room.lightsIncomplete) lightsPill.title = 'Mindestens ein Lichtstatus fehlt';
-            rmCell(tr, lightsPill);
-            rmCell(tr, room.mode && room.mode.label
-                ? rmPill(room.mode.label, room.mode.kind) : rmNode('span', 'rm-dash', '–'));
-            rmCell(tr, rmWindow(room));
-            rmCell(tr, rmValve(room.valve));
-            if (showExtras) {
-                rmCell(tr, rmNumber(room.humidity, 0, ' %'), 'rm-value');
-                rmCell(tr, rmNumber(room.co2, 0, ' ppm'), 'rm-value');
-                rmCell(tr, rmNumber(room.dewPoint, 1, ' °C'), 'rm-value');
-                rmCell(tr, room.heatingCooling || '–');
-            }
+            visibleColumns.forEach(column => rmCell(tr, rmRoomValue(room, column.key),
+                ['actual', 'setpoint', 'humidity', 'co2', 'dewPoint'].includes(column.key) ? 'rm-value' : ''));
             tbody.append(tr);
         });
         table.append(thead, tbody);
@@ -223,7 +251,10 @@
 
         const fragment = document.createDocumentFragment();
         if (!data.totalRooms) fragment.append(rmNode('div', 'rm-empty', 'Noch keine Räume konfiguriert.'));
-        else data.groups.forEach(group => fragment.append(rmRenderGroup(group, Boolean(data.showExtras), Boolean(data.showGroups))));
+        else {
+            const visibleColumns = rmVisibleColumns(data);
+            data.groups.forEach(group => fragment.append(rmRenderGroup(group, visibleColumns, Boolean(data.showGroups))));
+        }
         groups.replaceChildren(fragment);
     }
 </script>

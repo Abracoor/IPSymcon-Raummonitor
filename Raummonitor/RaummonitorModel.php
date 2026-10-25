@@ -53,6 +53,12 @@ final class RaummonitorModel
         $count = ['comfort' => 0, 'standby' => 0, 'night' => 0, 'frost' => 0, 'unknown' => 0];
         $openWindows = 0;
         $cache = [];
+        // Spalten gelten global für alle Gruppen. Ihre Sichtbarkeit hängt
+        // von der Zuordnung einer ID ab, nicht von ihrem aktuellen Messwert.
+        $columns = array_fill_keys([
+            'setpoint', 'lights', 'mode', 'window', 'valve',
+            'humidity', 'co2', 'dewPoint', 'heatingCooling'
+        ], false);
 
         // Jede Variable wird pro Aktualisierung nur einmal aus Symcon gelesen.
         $valueOf = static function (int $id) use ($read, &$cache, &$missing): mixed {
@@ -179,6 +185,9 @@ final class RaummonitorModel
                 $roomWindows[$windowID] = (bool) ($room['WindowInverted'] ?? false);
             }
             $windowCount = count($roomWindows);
+            if ($windowCount > 0) {
+                $columns['window'] = true;
+            }
             $openWindowCount = 0;
             $windowIncomplete = false;
             foreach ($roomWindows as $id => $invert) {
@@ -253,6 +262,23 @@ final class RaummonitorModel
                 }
             }
 
+            foreach ([
+                'setpoint' => 'SetpointTempID',
+                'mode' => 'OperationModeID',
+                'valve' => 'ValveID',
+                'humidity' => 'HumidityID',
+                'co2' => 'CO2ID',
+                'dewPoint' => 'DewPointID',
+                'heatingCooling' => 'HeatingCoolingID'
+            ] as $column => $field) {
+                if ((int) ($room[$field] ?? 0) > 0) {
+                    $columns[$column] = true;
+                }
+            }
+            if ($lightCountID > 0 || isset($lightsByRoom[$key])) {
+                $columns['lights'] = true;
+            }
+
             $groups[$group][] = [
                 'name' => $name,
                 'group' => $group,
@@ -306,6 +332,21 @@ final class RaummonitorModel
             $grouped = [['name' => '', 'rooms' => $all]];
         }
 
+        // Manuell vollständig: Raum und Ist sind ohnehin immer sichtbar,
+        // weitere Basisspalten werden eingeblendet. Extras erfordern auch
+        // weiterhin die separate Freigabe durch ShowExtraColumns.
+        $extras = ['humidity', 'co2', 'dewPoint', 'heatingCooling'];
+        if (!(bool) ($options['AutoColumns'] ?? true)) {
+            foreach (array_keys($columns) as $column) {
+                $columns[$column] = true;
+            }
+        }
+        if (!(bool) ($options['ShowExtraColumns'] ?? false)) {
+            foreach ($extras as $column) {
+                $columns[$column] = false;
+            }
+        }
+
         return [
             'totalRooms' => $totalRooms,
             'openWindows' => $openWindows,
@@ -313,6 +354,7 @@ final class RaummonitorModel
             'groups' => $grouped,
             'showGroups' => (bool) ($options['GroupRooms'] ?? true),
             'showExtras' => (bool) ($options['ShowExtraColumns'] ?? false),
+            'columns' => $columns,
             'configurationErrors' => $configErrors,
             'missingIDs' => array_map('intval', array_keys($missing))
         ];

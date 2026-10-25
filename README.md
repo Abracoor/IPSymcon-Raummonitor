@@ -17,6 +17,7 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
 - Je Raum: Isttemperatur, Solltemperatur, Lichtanzahl, Betriebsart,
   Fensterzustand, Ventilstellung.
 - Mehrere Fensterkontakte pro Raum mit Anzeige der geöffneten Kontakte.
+- Optionale Spalten automatisch ausblenden, wenn sie in keinem Raum konfiguriert sind.
 - Zusätzliche optionale Spalten: Luftfeuchte, CO₂, Taupunkt, Heizen/Kühlen.
 - Live-Aktualisierung bei Variablenänderungen, optional periodischer Abgleich.
 - Keine Fremdmodule, kein KNX-Herstellerbezug, kein Cloud-Zugang.
@@ -149,12 +150,26 @@ ungeprüft in einer vorhandenen Symcon-Installation eingesetzt werden.
 ## Anzeige / Kachel
 
 Oberhalb stehen sechs Kennzahlen. Darunter folgt die nach Gruppe und Raumname
-sortierte Tabelle. Nicht konfigurierte Werte erscheinen als „–“. Eine
+sortierte Tabelle. **Standardmäßig ist die automatische Spaltenauswahl aktiv:**
+Raumname und Isttemperatur sind immer sichtbar. Solltemperatur, Licht,
+Betriebsart, Fenster und Ventil erscheinen nur, wenn mindestens ein Raum eine
+passende Variable verwendet. Die Spalten gelten einheitlich für alle Etagen;
+ein Raum ohne Zuordnung zeigt darin „–“.
+
+Die Option **„Tabellenspalten automatisch nach verwendeten Variablen anzeigen“**
+kann deaktiviert werden, um wieder alle sieben Grundspalten anzuzeigen.
+Zusatzspalten für Feuchte, CO₂, Taupunkt und Heizen/Kühlen benötigen weiterhin
+die separate Freigabe **„Optionale Klima-Spalten anzeigen“**. Mit aktivierter
+Automatik erscheinen auch diese Zusatzspalten jeweils nur bei tatsächlicher
+Zuordnung.
+
+Nicht konfigurierte Werte erscheinen als „–“. Eine
 Warnmeldung in der Kachel und der Instanzstatus zeigen fehlende oder ungültige
 Messwerte an. Auf schmalen Kacheln ist die Tabelle horizontal scrollbar.
 
-Die Erweiterungsspalten sind standardmäßig ausgeblendet und können im Formular
-aktiviert werden.
+**Wichtig:** Eine zugeordnete Variable hält ihre Spalte sichtbar, selbst wenn
+der aktuelle Messwert fehlt. Fehler werden also nicht durch automatisches
+Ausblenden versteckt.
 
 ## PHP-Funktionen
 

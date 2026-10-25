@@ -50,6 +50,25 @@ gezählt; die Fensterliste hat dann Vorrang bei der Invertierung. Pro Raum werde
 Kontaktanzahl, Anzahl geöffneter Kontakte und der gemeinsame Status ermittelt.
 Die globale Kennzahl `openWindows` zählt **Kontakte**, keine Räume.
 
+## Automatische Tabellenspalten
+
+Die Eigenschaft `AutoColumns` ist standardmäßig `true`. Die Modellberechnung
+ermittelt je optionaler Spalte, ob in mindestens einer gültigen Raumzeile
+eine passende Variablen-ID oder eine passende Licht-/Fensterlisten-Zuordnung
+existiert. Das Ergebnis ist eine **globale** Spaltenmaske für alle Gruppen.
+
+- `Raum` und `Ist` erscheinen immer.
+- `Soll`, `Licht`, `Modus`, `Fenster` und `Ventil` nur bei Konfiguration.
+- Klima-Zusatzspalten werden zusätzlich von `ShowExtraColumns` gesteuert:
+  Auch bei aktivierter Automatik bleiben sie ohne Freigabe verborgen.
+- Bei deaktiviertem `AutoColumns` werden alle fünf optionalen Basisspalten
+  wie in den bisherigen Builds angezeigt (Zusatzspalten weiter optional).
+- Eine konfigurierte, aktuell aber fehlende Variable hält die Spalte sichtbar,
+  sodass ein Messwertfehler nicht unsichtbar wird.
+
+Die HTML-Kachel erhält dieselbe Spaltenmaske für sämtliche Etagen. Ihre
+Mindestbreite richtet sich nach der Anzahl und Art der sichtbaren Spalten.
+
 ## Farbkonzept
 
 | Status | Kennzeichnung |

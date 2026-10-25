@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.5 – Dynamische Tabellenspalten (25.10.2026)
+
+- Tabellenspalten werden standardmäßig anhand der konfigurierten Variablen
+  automatisch ein- und ausgeblendet; Raumname und Isttemperatur bleiben sichtbar.
+- Ein neuer Schalter `AutoColumns` ermöglicht weiterhin die vollständige Ansicht.
+- Alle Etagen verwenden dieselbe Spaltenauswahl; fehlende Messwerte lassen
+  konfigurierte Spalten sichtbar.
+- Zusatzspalten für Klimadaten behalten die separate `ShowExtraColumns`-Freigabe.
+- Die Tabellenbreite passt sich der Anzahl sichtbarer Spalten an.
+- Modell- und Modultests um die neue Spaltenlogik ergänzt.
+
 ## 1.0.4 – Mehrere Fensterkontakte je Raum (25.10.2026)
 
 - Neue kompakte Konfigurationsliste „Fensterkontakte je Raum“ mit Variablen-ID,
