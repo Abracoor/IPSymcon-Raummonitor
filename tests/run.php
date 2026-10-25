@@ -65,6 +65,41 @@ check($data['groups'][0]['rooms'][1]['heatingCooling'], 'Kühlen', 'Heizen/Kühl
 check($data['missingIDs'], [], 'Alle Werte verfügbar');
 check($reads, count(RaummonitorModel::configuredIDs($rooms, $lights)), 'Jede referenzierte Variable genau einmal gelesen');
 
+// Mehrere Kontakte im selben Raum: bisheriger Einzelkontakt + zusätzliche Liste.
+$values[22] = true;
+$windows = [
+    ['Group' => 'EG', 'Room' => 'Wohnzimmer', 'Name' => 'Fenster rechts',
+        'VariableID' => 22, 'Invert' => false]
+];
+$data = RaummonitorModel::build($rooms, $lights, [], $reader, $windows);
+check($data['openWindows'], 1, 'Ein geöffnetes Fenster zählt als ein Kontakt');
+check($data['groups'][0]['rooms'][1]['windowCount'], 2, 'Alter Einzelkontakt und Fensterliste zusammengefasst');
+check($data['groups'][0]['rooms'][1]['openWindowCount'], 1, 'Ein von zwei Fenstern geöffnet');
+check($data['groups'][0]['rooms'][1]['window'], true, 'Ein geöffnetes Fenster macht den Raumstatus offen');
+check(in_array(22, RaummonitorModel::configuredIDs($rooms, $lights, $windows), true), true,
+    'Zusätzlicher Fensterkontakt wird für Updates abonniert');
+
+$values[4] = true;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader, $windows);
+check($data['openWindows'], 2, 'Zwei geöffnete Fenster werden einzeln gezählt');
+
+$values[4] = false;
+$values[22] = false;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader, $windows);
+check($data['groups'][0]['rooms'][1]['window'], false, 'Alle Kontakte geschlossen = Raum geschlossen');
+
+unset($values[22]);
+$data = RaummonitorModel::build($rooms, $lights, [], $reader, $windows);
+check($data['groups'][0]['rooms'][1]['window'], null, 'Unbekannter Kontakt niemals als geschlossen angezeigt');
+check($data['groups'][0]['rooms'][1]['windowIncomplete'], true, 'Unvollständige Kontaktliste markiert');
+check($data['missingIDs'], [22], 'Fehlender Fensterkontakt wird gemeldet');
+
+$windows[] = ['Group' => 'EG', 'Room' => 'Wohnzimmer', 'VariableID' => 4, 'Invert' => false];
+$data = RaummonitorModel::build($rooms, $lights, [], $reader, $windows);
+check($data['groups'][0]['rooms'][1]['windowCount'], 2, 'Dieselbe ID aus Einzelkontakt und Liste wird nicht doppelt gezählt');
+$values[22] = true;
+array_pop($windows);
+
 $values[3] = 2;
 $data = RaummonitorModel::build($rooms, $lights, [], $reader);
 check($data['modeCounts']['standby'], 1, 'KNX DPT 20.102: 2 = Standby');

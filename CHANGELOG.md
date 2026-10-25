@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.4 – Mehrere Fensterkontakte je Raum (25.10.2026)
+
+- Neue kompakte Konfigurationsliste „Fensterkontakte je Raum“ mit Variablen-ID,
+  frei wählbarer Bezeichnung und individueller Invertierung.
+- Bisheriger Einzelkontakt bleibt kompatibel und kann durch weitere Kontakte
+  ergänzt werden; doppelte IDs werden pro Raum nicht doppelt gezählt.
+- Kachel zeigt „1 von 2 offen“ oder „alle geschlossen“; Gesamtkennzahl zählt
+  einzelne geöffnete Kontakte. Fehlende Statuswerte bleiben erkennbar.
+- Tests und Beispielkonfiguration für mehrere Fenster ergänzt.
+
 ## 1.0.3 – KNX-Betriebsarten korrigiert (25.10.2026)
 
 - Standardzuordnung gemäß KNX DPT 20.102 korrigiert: 1=Komfort, 2=Standby,

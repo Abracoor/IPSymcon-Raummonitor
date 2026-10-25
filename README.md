@@ -16,6 +16,7 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
 - Tabelle nach Raumname sortiert, optional nach Gruppen/Etagen gegliedert.
 - Je Raum: Isttemperatur, Solltemperatur, Lichtanzahl, Betriebsart,
   Fensterzustand, Ventilstellung.
+- Mehrere Fensterkontakte pro Raum mit Anzeige der geöffneten Kontakte.
 - Zusätzliche optionale Spalten: Luftfeuchte, CO₂, Taupunkt, Heizen/Kühlen.
 - Live-Aktualisierung bei Variablenänderungen, optional periodischer Abgleich.
 - Keine Fremdmodule, kein KNX-Herstellerbezug, kein Cloud-Zugang.
@@ -60,7 +61,7 @@ Browser-Zoom erreichbar.
 | Isttemperatur | **Ja** | Variable in Grad Celsius |
 | Solltemperatur | Nein | Variable in Grad Celsius |
 | Betriebsart | Nein | Integerwert; KNX DPT 20.102 als Vorgabe 1–4 |
-| Fensterkontakt | Nein | Bool: `true` bedeutet offen, optional invertierbar |
+| Fensterkontakt | Nein | Optionaler Einzelkontakt; zusätzliche Kontakte in der Fensterliste |
 | Ventilstellung | Nein | Numerisch; standardmäßig 0–100 % |
 | Lichtanzahl | Nein | Bereits vorhandene numerische Gesamtzahl |
 | Feuchte/CO₂/Taupunkt | Nein | Numerische Messwerte |
@@ -84,6 +85,26 @@ Es gibt zwei gleichwertige Wege:
 Wenn beides vorhanden ist, gilt die fertige Lichtanzahl. Ohne beides steht
 in der Lichtspalte „–“; fehlende Zuordnungen zählen ausdrücklich **nicht** als
 „0 Lichter“.
+
+### Mehrere Fensterkontakte pro Raum
+
+Die Liste **„Fensterkontakte je Raum“** enthält beliebig viele Bool-Variablen
+mit `Group`, `Room`, einer optionalen Fensterbezeichnung und `VariableID`.
+Die Schreibweisen für Gruppe und Raum müssen mit einem Eintrag der Raumliste
+übereinstimmen. Falls ein Fensterkontakt `true` als *geschlossen* meldet,
+**„Kontakt invertieren“** einschalten.
+
+Der bisherige **einzelne Fensterkontakt** (`WindowID`) in der Raumkonfiguration
+bleibt gültig. Weitere Fenster können über die Fensterliste hinzugefügt werden.
+Dieselbe Variablen-ID wird innerhalb eines Raums nur einmal gezählt; ist sie
+zusätzlich in der Fensterliste vorhanden, gilt deren Invertierungsoption.
+
+- Sind alle Kontakte geschlossen, steht in der Kachel „alle geschlossen“.
+- Ist bei zwei Fenstern eines offen, steht dort „1 von 2 offen“.
+- Die Kennzahl **„Fenster offen“ zählt einzelne geöffnete Kontakte**, nicht
+  nur Räume mit mindestens einem geöffneten Fenster.
+- Ist ein Kontakt nicht lesbar, wird die Darstellung als unvollständig markiert;
+  der Raum wird **nicht** fälschlich als vollständig geschlossen angezeigt.
 
 ### Betriebsarten und Farben
 
@@ -122,7 +143,7 @@ falsche Anzeigen zu vermeiden.
 ## Beispielkonfiguration
 
 Unter [docs/beispielkonfiguration.json](docs/beispielkonfiguration.json) gibt es ein kleines Beispiel.
-Die IDs **12345 bis 12351 sind frei erfundene Platzhalter** und dürfen nicht
+Die IDs **12345 bis 12352 sind frei erfundene Platzhalter** und dürfen nicht
 ungeprüft in einer vorhandenen Symcon-Installation eingesetzt werden.
 
 ## Anzeige / Kachel
@@ -150,7 +171,7 @@ Die Funktionen benutzen ausschließlich die vorhandenen Symcon-Variablen.
 | --- | --- |
 | 102 | Alles betriebsbereit |
 | 104 | Noch keine Räume eingerichtet |
-| 201 | Fehlerhafte Raum-/Lichtliste oder doppelte Betriebsartwerte |
+| 201 | Fehlerhafte Raum-/Licht-/Fensterliste oder doppelte Betriebsartwerte |
 | 202 | Konfigurierter Messwert fehlt oder ist nicht plausibel lesbar |
 
 Details zu fehlenden Variablen erscheinen im **Debug der Raummonitor-Instanz**.

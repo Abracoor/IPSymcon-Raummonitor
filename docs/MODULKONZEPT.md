@@ -9,7 +9,7 @@ alphabetisch nach Raumname sortiert.
 
 ## Datenfluss
 
-1. Die Instanz speichert zwei JSON-Listen (`Rooms`, `Lights`) und die Einstellungen.
+1. Die Instanz speichert drei JSON-Listen (`Rooms`, `Lights`, `Windows`) und die Einstellungen.
    Die Raumliste zeigt nur drei Übersichts-Spalten; ein eigenes Zeilenformular
    enthält die optionalen Zuordnungen. Die JSON-Struktur bleibt unverändert.
 2. `ApplyChanges()` registriert Referenzen und `VM_UPDATE`-/`VM_DELETE`-Nachrichten
@@ -30,7 +30,7 @@ alphabetisch nach Raumname sortiert.
 | `ActualTempID` | Ja | Aktuelle Temperatur in °C |
 | `SetpointTempID` | Nein | Solltemperatur in °C |
 | `OperationModeID` | Nein | KNX DPT 20.102 standardmäßig 1/2/3/4 (Komfort/Standby/Nacht/Schutz), konfigurierbare Zuordnung; 0=Auto wird bislang nicht gesondert dargestellt |
-| `WindowID` | Nein | Bool/0/1 als Fensterstatus; mit `WindowInverted` invertierbar |
+| `WindowID` | Nein | Bestehender Einzelkontakt als Bool/0/1; mit `WindowInverted` invertierbar |
 | `ValveID` | Nein | Aktuelle Ventilstellung; `ValveMax` skaliert auf Prozent |
 | `LightCountID` | Nein | Bereits vorhandene Anzahl eingeschalteter Lichter |
 | `HumidityID` | Nein | Relative Feuchtigkeit in Prozent |
@@ -41,6 +41,14 @@ alphabetisch nach Raumname sortiert.
 `Lights` ist eine zweite Liste für die Zuordnung beliebig vieler Bool-Schalter
 pro Raum. Dabei müssen `Group` und `Room` mit der Raumliste übereinstimmen.
 Ist `LightCountID` gesetzt, hat dessen Wert Vorrang gegenüber den Lichtzeilen.
+
+`Windows` ist eine dritte Liste für beliebig viele Fensterkontakte je Raum
+(`Group`, `Room`, `Name`, `VariableID`, `Invert`). Der Raumname und die Gruppe
+müssen exakt passen. Alle Kontakte werden zusammen mit einem eventuell bereits
+konfigurierten `WindowID` ausgewertet. Eine doppelte Variablen-ID wird nur einmal
+gezählt; die Fensterliste hat dann Vorrang bei der Invertierung. Pro Raum werden
+Kontaktanzahl, Anzahl geöffneter Kontakte und der gemeinsame Status ermittelt.
+Die globale Kennzahl `openWindows` zählt **Kontakte**, keine Räume.
 
 ## Farbkonzept
 
@@ -66,6 +74,9 @@ horizontal scrollbar, falls nicht alle Spalten in eine schmale Kachel passen.
 - `202`: mindestens ein konfigurierter Wert fehlt oder hat ein inkompatibles Format.
 - Nicht zugeordnete optionale Felder werden als „–“ dargestellt, nicht als `0`.
 - Nicht vorhandene Werte werden niemals als „Fenster geschlossen“ interpretiert.
+- Ein nicht lesbarer Fensterkontakt wird markiert. Bei ausschließlich geschlossenen
+  bekannten Kontakten bleibt der Raumstatus dann unbekannt; erkannte offene
+  Kontakte werden trotzdem gezählt und angezeigt.
 - Ein partiell fehlender Lichtstatus wird mit `*` markiert.
 - Optionaler Timer; standardmäßig Updates ausschließlich durch Variablennachrichten.
 

@@ -21,6 +21,7 @@ class Raummonitor extends IPSModuleStrict
 
         $this->RegisterPropertyString('Rooms', '[]');
         $this->RegisterPropertyString('Lights', '[]');
+        $this->RegisterPropertyString('Windows', '[]');
         // KNX DPT 20.102: 0=Auto, 1=Komfort, 2=Standby,
         // 3=Economy/Nacht, 4=Frost-/Hitzeschutz.
         // Die Werte bleiben für andere Systeme frei konfigurierbar.
@@ -68,8 +69,8 @@ class Raummonitor extends IPSModuleStrict
             return;
         }
 
-        [$rooms, $lights] = $this->configurationLists();
-        foreach (RaummonitorModel::configuredIDs($rooms, $lights) as $id) {
+        [$rooms, $lights, $windows] = $this->configurationLists();
+        foreach (RaummonitorModel::configuredIDs($rooms, $lights, $windows) as $id) {
             if (!IPS_VariableExists($id)) {
                 continue;
             }
@@ -99,7 +100,7 @@ class Raummonitor extends IPSModuleStrict
      */
     public function GetSnapshot(): array
     {
-        [$rooms, $lights, $validJSON] = $this->configurationLists();
+        [$rooms, $lights, $windows, $validJSON] = $this->configurationLists();
         $options = $this->options();
 
         $snapshot = RaummonitorModel::build(
@@ -115,10 +116,11 @@ class Raummonitor extends IPSModuleStrict
                 } catch (Throwable $exception) {
                     return null;
                 }
-            }
+            },
+            $windows
         );
         if (!$validJSON) {
-            $snapshot['configurationErrors'][] = 'Ungültiges JSON in der Raum- oder Lichtliste';
+            $snapshot['configurationErrors'][] = 'Ungültiges JSON in der Raum-, Licht- oder Fensterliste';
         }
         return $snapshot;
     }
@@ -173,14 +175,17 @@ class Raummonitor extends IPSModuleStrict
         return $html . '<script>handleMessage(' . $json . ');</script>';
     }
 
-    /** @return array{0: array, 1: array, 2: bool} */
+    /** @return array{0: array, 1: array, 2: array, 3: bool} */
     private function configurationLists(): array
     {
         $rooms = json_decode($this->ReadPropertyString('Rooms'), true);
         $lights = json_decode($this->ReadPropertyString('Lights'), true);
+        $windows = json_decode($this->ReadPropertyString('Windows'), true);
         $valid = is_array($rooms) && array_is_list($rooms)
-            && is_array($lights) && array_is_list($lights);
-        return [is_array($rooms) ? $rooms : [], is_array($lights) ? $lights : [], $valid];
+            && is_array($lights) && array_is_list($lights)
+            && is_array($windows) && array_is_list($windows);
+        return [is_array($rooms) ? $rooms : [], is_array($lights) ? $lights : [],
+            is_array($windows) ? $windows : [], $valid];
     }
 
     private function options(): array

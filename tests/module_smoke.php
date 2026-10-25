@@ -11,7 +11,7 @@ const IS_INACTIVE = 104;
 const IS_ACTIVE = 102;
 const INSTANCE_VISUALIZATION_TYPE_HTML_FULLSCREEN = 2;
 
-$GLOBALS['testValues'] = [10 => 21.5, 11 => 1, 12 => true];
+$GLOBALS['testValues'] = [10 => 21.5, 11 => 1, 12 => true, 13 => true];
 
 function IPS_GetKernelRunlevel(): int { return KR_READY; }
 function IPS_VariableExists(int $id): bool { return array_key_exists($id, $GLOBALS['testValues']); }
@@ -73,11 +73,16 @@ $instance->properties['Rooms'] = json_encode([
         'OperationModeID' => 11, 'WindowID' => 12
     ]
 ]);
+$instance->properties['Windows'] = json_encode([
+    ['Group' => 'EG', 'Room' => '<script>alert(1)</script>',
+        'Name' => 'Fenster 2', 'VariableID' => 13, 'Invert' => false]
+]);
 $instance->ApplyChanges();
 verify($instance->status === 102, 'Instanzstatus ist aktiv');
 verify($instance->GetSnapshot()['modeCounts']['comfort'] === 1, 'DPT 20.102: 1 = Komfort auch in Modulvoreinstellung');
+verify($instance->GetSnapshot()['openWindows'] === 2, 'Fenster aus Einzelzuordnung und neuer Liste zusammengefasst');
 verify($instance->visualizationType === 2, 'HTML-Vollbildtyp verwendet');
-verify(count($instance->references) === 3, 'Drei referenzierte Variablen');
+verify(count($instance->references) === 4, 'Vier referenzierte Variablen inklusive zusätzlichem Fenster');
 verify(count($instance->updates) === 1, 'Erste Kachel-Aktualisierung verschickt');
 
 $html = $instance->GetVisualizationTile();

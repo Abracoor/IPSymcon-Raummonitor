@@ -126,6 +126,28 @@
         return wrapper;
     }
 
+    function rmWindow(room) {
+        // Ältere Payloads mit nur einem Bool-Fensterstatus bleiben darstellbar.
+        const total = Number.isInteger(room.windowCount)
+            ? room.windowCount : (room.window === null ? 0 : 1);
+        const open = Number.isInteger(room.openWindowCount)
+            ? room.openWindowCount : (room.window === true ? 1 : 0);
+        const incomplete = Boolean(room.windowIncomplete);
+        if (total === 0) return rmNode('span', 'rm-dash', '–');
+
+        let pill;
+        if (open > 0) {
+            pill = rmPill((total === 1 ? 'offen' : open + ' von ' + total + ' offen')
+                + (incomplete ? ' *' : ''), 'open');
+        } else if (incomplete) {
+            pill = rmPill('unbekannt', 'unknown');
+        } else {
+            pill = rmPill(total === 1 ? 'geschlossen' : 'alle geschlossen', 'closed');
+        }
+        if (incomplete) pill.title = 'Mindestens ein Fensterstatus fehlt';
+        return pill;
+    }
+
     function rmRenderGroup(group, showExtras, showGroups) {
         const section = rmNode('section', 'rm-group');
         const rooms = Array.isArray(group.rooms) ? group.rooms : [];
@@ -156,9 +178,7 @@
             rmCell(tr, lightsPill);
             rmCell(tr, room.mode && room.mode.label
                 ? rmPill(room.mode.label, room.mode.kind) : rmNode('span', 'rm-dash', '–'));
-            rmCell(tr, room.window === true
-                ? rmPill('offen', 'open') : room.window === false
-                    ? rmPill('geschlossen', 'closed') : rmNode('span', 'rm-dash', '–'));
+            rmCell(tr, rmWindow(room));
             rmCell(tr, rmValve(room.valve));
             if (showExtras) {
                 rmCell(tr, rmNumber(room.humidity, 0, ' %'), 'rm-value');

@@ -17,7 +17,7 @@ final class RaummonitorModel
         'HeatingCoolingID'
     ];
 
-    public static function configuredIDs(array $rooms, array $lights): array
+    public static function configuredIDs(array $rooms, array $lights, array $windows = []): array
     {
         $ids = [];
         foreach ($rooms as $room) {
@@ -36,10 +36,15 @@ final class RaummonitorModel
                 $ids[(int) $light['VariableID']] = true;
             }
         }
+        foreach ($windows as $window) {
+            if (is_array($window) && (int) ($window['VariableID'] ?? 0) > 0) {
+                $ids[(int) $window['VariableID']] = true;
+            }
+        }
         return array_keys($ids);
     }
 
-    public static function build(array $rooms, array $lights, array $options, callable $read): array
+    public static function build(array $rooms, array $lights, array $options, callable $read, array $windows = []): array
     {
         $configErrors = [];
         $missing = [];
@@ -83,6 +88,29 @@ final class RaummonitorModel
                 $configErrors[] = 'Lichtvariable ' . $id . ' im Raum ' . $name . ' doppelt';
             }
             $lightsByRoom[$key][$id] = (bool) ($light['Invert'] ?? false);
+        }
+
+        // Einzelkontakte aus der separaten Fensterliste. Die bisherige
+        // WindowID je Raum wird später zusätzlich berücksichtigt.
+        $windowsByRoom = [];
+        foreach ($windows as $index => $entry) {
+            if (!is_array($entry)) {
+                $configErrors[] = 'Ungültiger Eintrag in der Fensterliste: ' . ($index + 1);
+                continue;
+            }
+            $group = self::groupName($entry['Group'] ?? '');
+            $name = trim((string) ($entry['Room'] ?? ''));
+            $id = (int) ($entry['VariableID'] ?? 0);
+            if ($name === '' || $id <= 0) {
+                $configErrors[] = 'Fensterzeile ' . ($index + 1) . ': Raum oder Variablen-ID fehlt';
+                continue;
+            }
+            $key = self::roomKey($group, $name);
+            if (isset($windowsByRoom[$key][$id])) {
+                $configErrors[] = 'Fensterkontakt ' . $id . ' im Raum ' . $name . ' doppelt';
+                continue;
+            }
+            $windowsByRoom[$key][$id] = (bool) ($entry['Invert'] ?? false);
         }
 
         $mapping = [
@@ -143,22 +171,31 @@ final class RaummonitorModel
                 $count[$mode['kind']]++;
             }
 
+            $roomWindows = $windowsByRoom[$key] ?? [];
             $windowID = (int) ($room['WindowID'] ?? 0);
-            $window = null;
-            if ($windowID > 0) {
-                $raw = $valueOf($windowID);
-                $window = self::switchState($raw);
-                if ($window === null) {
-                    $missing[$windowID] = true;
-                } else {
-                    if ((bool) ($room['WindowInverted'] ?? false)) {
-                        $window = !$window;
-                    }
-                    if ($window) {
-                        $openWindows++;
-                    }
+            // Eine doppelt eingetragene ID nur einmal zählen. Die neue
+            // Fensterliste hat bei einer Doppelbelegung Vorrang.
+            if ($windowID > 0 && !array_key_exists($windowID, $roomWindows)) {
+                $roomWindows[$windowID] = (bool) ($room['WindowInverted'] ?? false);
+            }
+            $windowCount = count($roomWindows);
+            $openWindowCount = 0;
+            $windowIncomplete = false;
+            foreach ($roomWindows as $id => $invert) {
+                $state = self::switchState($valueOf((int) $id));
+                if ($state === null) {
+                    $missing[$id] = true;
+                    $windowIncomplete = true;
+                    continue;
+                }
+                if ($invert ? !$state : $state) {
+                    $openWindowCount++;
                 }
             }
+            $openWindows += $openWindowCount;
+            // Fehlende Werte niemals als sicher geschlossen ausgeben.
+            $window = $windowCount === 0 || ($windowIncomplete && $openWindowCount === 0)
+                ? null : $openWindowCount > 0;
 
             $valveID = (int) ($room['ValveID'] ?? 0);
             $valve = null;
@@ -225,6 +262,9 @@ final class RaummonitorModel
                 'lightsIncomplete' => $lightIncomplete,
                 'mode' => $mode,
                 'window' => $window,
+                'windowCount' => $windowCount,
+                'openWindowCount' => $openWindowCount,
+                'windowIncomplete' => $windowIncomplete,
                 'valve' => $valve,
                 'humidity' => $humidity,
                 'co2' => $co2,
@@ -236,6 +276,11 @@ final class RaummonitorModel
         foreach ($lightsByRoom as $key => $_) {
             if (!isset($seenRooms[$key])) {
                 $configErrors[] = 'Lichtzuordnung ohne passenden Raum: ' . str_replace("\0", ' / ', $key);
+            }
+        }
+        foreach ($windowsByRoom as $key => $_) {
+            if (!isset($seenRooms[$key])) {
+                $configErrors[] = 'Fensterzuordnung ohne passenden Raum: ' . str_replace("\0", ' / ', $key);
             }
         }
 
