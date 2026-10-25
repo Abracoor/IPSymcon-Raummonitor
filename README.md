@@ -86,9 +86,18 @@ verwendeten Kachelvisualisierung erreichbar sein.
   gekennzeichneter Button dargestellt. Ein Klick öffnet die Kategorie in
   derselben Kachelvisualisierung.
 - **Ohne Zielkategorie (Standard):** Der Raumname bleibt normaler Text;
-  es findet keine Navigation statt.
+  es findet keine Navigation statt. Im Auswahlfeld steht **„Kein(e)“**.
+  Die Anzeige **„IP Symcon“** bezeichnet dagegen das Wurzelobjekt und
+  ist kein Raum-Navigationsziel. Über das **X** kann die Auswahl gelöscht werden.
 - Bereits gespeicherte Räume benötigen keine Anpassung. Die neuen Ziele
   werden ausschließlich auf ausdrückliche Auswahl hin verwendet.
+
+Bei neuen Räumen verwendet der Dialog den Symcon-Platzhalterwert `1`
+(„Kein(e)“). Ein zuvor gespeicherter Wert `0` (Wurzelobjekt, z. B. aus
+Build 14) bleibt funktional ohne Navigation; um auch im Auswahlfeld
+„Kein(e)“ anzuzeigen, kann die alte Auswahl einmalig per **X** gelöscht
+und die Konfiguration übernommen werden. Bestehende echte Zielkategorien
+bleiben unverändert.
 
 Die Navigation verwendet die offizielle HTML-SDK-Funktion
 [`openObject()`](https://www.symcon.de/de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/html-sdk/openobject/)

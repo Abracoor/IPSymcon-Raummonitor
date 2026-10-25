@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.15 – Leere Detailseiten-Auswahl korrigiert (25.10.2026)
+
+- Symcon verwendet Objekt-ID `1` für „Kein(e)“; ID `0` bezeichnet das
+  Wurzelobjekt „IP Symcon“. In Build 14 wurde dies im Dialog verwechselt.
+- Neue Raumzeilen und das Auswahlfeld erhalten daher jetzt Wert `1`.
+- Bestehende Werte `0` und `1` gelten beide als inaktiv; echte
+  Detailkategorien behalten ihre ID und funktionieren unverändert.
+- Formularhinweis und README erklären das Leeren der Auswahl über das X.
+
 ## 1.0.14 – Eindeutiger Ausgangswert für optionale Detailseite (25.10.2026)
 
 - Auswahlfeld für die Raum-Detailseite explizit mit dem Wert `0` initialisiert.

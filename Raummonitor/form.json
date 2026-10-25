@@ -16,7 +16,7 @@
                 {"name": "Group", "caption": "Gruppe / Etage", "width": "150px", "add": "", "edit": {"type": "ValidationTextBox"}},
                 {"name": "Room", "caption": "Raumname *", "width": "auto", "add": "", "edit": {"type": "ValidationTextBox"}},
                 {"name": "ActualTempID", "caption": "Isttemperatur *", "width": "240px", "add": 0, "edit": {"type": "SelectVariable"}},
-                {"name": "DetailCategoryID", "visible": false, "add": 0, "edit": {"type": "SelectCategory"}},
+                {"name": "DetailCategoryID", "visible": false, "add": 1, "edit": {"type": "SelectCategory"}},
                 {"name": "SetpointTempID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "OperationModeID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "WindowID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
@@ -39,8 +39,8 @@
                     "caption": "Navigation zur Detailseite (optional)",
                     "expanded": false,
                     "items": [
-                        {"type": "SelectCategory", "name": "DetailCategoryID", "caption": "Detailseite", "value": 0},
-                        {"type": "Label", "caption": "Keine Detailseite ausgewählt (Wert 0) = Raumname bleibt normaler Text. Erst die ausdrückliche Auswahl einer vorhandenen Kategorie aktiviert den Seitenwechsel. Bereits gespeicherte Zielkategorien bleiben erhalten."}
+                        {"type": "SelectCategory", "name": "DetailCategoryID", "caption": "Detailseite", "value": 1},
+                        {"type": "Label", "caption": "Kein(e) = keine Detailseite (Standard). Der Raumname bleibt dann normaler Text. Wähle eine vorhandene Raumkategorie, um den Seitenwechsel zu aktivieren. Bereits gespeicherte Zielkategorien bleiben erhalten. Hinweis: IP Symcon bezeichnet das Wurzelobjekt und ist keine Raum-Detailseite."}
                     ]
                 },
                 {

@@ -307,12 +307,16 @@ final class RaummonitorModel
                 $columns['lights'] = true;
             }
 
+            // Symcon reserviert die Objekt-ID 1 für "Kein(e)". Die ID 0 ist
+            // das Wurzelobjekt "IP Symcon", kein gültiges Raum-Navigationsziel.
+            // Beide Werte können in älteren Raumkonfigurationen vorkommen.
+            $detailCategoryID = (int) ($room['DetailCategoryID'] ?? 0);
             $groups[$group][] = [
                 'name' => $name,
                 'group' => $group,
                 // Optionales Navigationsziel (Symcon-Kategorie); keine Sensor-ID.
                 // Alte Raumkonfigurationen ohne dieses Feld bleiben kompatibel.
-                'detailCategoryID' => max(0, (int) ($room['DetailCategoryID'] ?? 0)),
+                'detailCategoryID' => $detailCategoryID > 1 ? $detailCategoryID : 0,
                 'actual' => $actual,
                 'setpoint' => $setpoint,
                 'lights' => $lightCount,

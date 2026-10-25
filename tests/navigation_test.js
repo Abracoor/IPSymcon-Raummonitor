@@ -15,8 +15,10 @@ const form = JSON.parse(fs.readFileSync(path.join(__dirname, '../Raummonitor/for
 const roomList = form.elements.find(element => element.name === 'Rooms');
 const nav = roomList.form.find(element => element.caption === 'Navigation zur Detailseite (optional)');
 const picker = nav.items.find(element => element.name === 'DetailCategoryID');
-assert.equal(picker.value, 0, 'Kategorieauswahl beginnt ausdrücklich ohne Detailziel');
-assert.ok(nav.items.some(element => element.type === 'Label' && element.caption.includes('Wert 0')),
+assert.equal(picker.value, 1, 'Kategorieauswahl beginnt mit Kein(e) statt dem Symcon-Wurzelobjekt');
+assert.equal(roomList.columns.find(column => column.name === 'DetailCategoryID').add, 1,
+    'Auch neue Raumzeilen übernehmen den inaktiven Wert 1');
+assert.ok(nav.items.some(element => element.type === 'Label' && element.caption.includes('Kein(e)')),
     'Raumdialog erklärt den inaktiven Ausgangszustand');
 
 const opened = [];
@@ -41,6 +43,9 @@ assert.equal(room, 'Bad', 'Alte Konfiguration ohne Detailseite bleibt einfacher 
 
 room = vm.runInContext("rmRoomName({name: 'Bad', detailCategoryID: 0})", context);
 assert.equal(room, 'Bad', 'Zielkategorie 0 deaktiviert den Klick');
+
+room = vm.runInContext("rmRoomName({name: 'Bad', detailCategoryID: 1})", context);
+assert.equal(room, 'Bad', 'Symcon-Platzhalter 1 deaktiviert den Klick');
 
 room = vm.runInContext("rmRoomName({name: 'Arbeitszimmer', detailCategoryID: 12353})", context);
 assert.equal(room.tagName, 'button', 'Zielkategorie erzeugt einen zugänglichen Button');

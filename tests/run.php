@@ -72,6 +72,18 @@ check($data['groups'][0]['rooms'][1]['detailCategoryID'], 12353, 'Optionale Deta
 check($data['groups'][0]['rooms'][0]['detailCategoryID'], 0, 'Alter Raum ohne Detailseite bleibt ohne Navigation');
 check($data['missingIDs'], [], 'Alle Werte verfügbar');
 check($reads, count(RaummonitorModel::configuredIDs($rooms, $lights)), 'Jede referenzierte Variable genau einmal gelesen');
+$noTarget = RaummonitorModel::build(
+    [['Group' => 'EG', 'Room' => 'Ohne Detailseite', 'ActualTempID' => 8, 'DetailCategoryID' => 1]],
+    [], [], $reader
+);
+check($noTarget['groups'][0]['rooms'][0]['detailCategoryID'], 0,
+    'Symcon Kein(e) (ID 1) erzeugt keine Navigation');
+$rootTarget = RaummonitorModel::build(
+    [['Group' => 'EG', 'Room' => 'Wurzel', 'ActualTempID' => 8, 'DetailCategoryID' => 0]],
+    [], [], $reader
+);
+check($rootTarget['groups'][0]['rooms'][0]['detailCategoryID'], 0,
+    'Frühere Wurzel-Auswahl (ID 0) bleibt inaktiv');
 
 // Konfigurierbare Temperatur-Plausibilität inkl. Grenzwerten und Rückkehr.
 $values[1] = 32767;

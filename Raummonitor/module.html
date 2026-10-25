@@ -151,7 +151,7 @@
         const name = room.name || '–';
         const categoryID = room.detailCategoryID;
         // Ohne konfigurierte Detailseite bleibt der Raumname reiner Text.
-        if (!Number.isSafeInteger(categoryID) || categoryID <= 0) return name;
+        if (!Number.isSafeInteger(categoryID) || categoryID <= 1) return name;
 
         const button = rmNode('button', 'rm-room-link', name);
         button.type = 'button';
