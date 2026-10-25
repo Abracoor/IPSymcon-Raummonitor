@@ -20,6 +20,7 @@ beliebigen IP-Symcon-Variablen aus anderen Systemen.
 - Optionale Spalten automatisch ausblenden, wenn sie in keinem Raum konfiguriert sind.
 - Zusätzliche optionale Spalten: Luftfeuchte, CO₂, Taupunkt, Heizen/Kühlen.
 - Live-Aktualisierung bei Variablenänderungen, optional periodischer Abgleich.
+- Konfigurierbare Plausibilitätsprüfung für Ist- und Solltemperaturen.
 - Keine Fremdmodule, kein KNX-Herstellerbezug, kein Cloud-Zugang.
 - Schreibgeschützt: Das Modul steuert keine Ventile oder Lichter.
 
@@ -144,6 +145,25 @@ Der maximale Rohwert, der 100 % entspricht, kann je Raum festgelegt werden:
 Es erfolgt **keine** automatische Erkennung des Skalierungsformats, um
 falsche Anzeigen zu vermeiden.
 
+### Plausibilitätsprüfung für Temperaturen
+
+Im aufklappbaren Bereich **„Plausibilitätsprüfung für Raumtemperaturen“** ist
+die Prüfung standardmäßig aktiviert. Die Grenzen sind zunächst **−20 °C**
+und **+60 °C**. Beide Grenzwerte selbst sind erlaubt; nur Werte außerhalb
+des Intervalls werden als unplausibel behandelt.
+
+- Geprüft werden **Ist- und Solltemperatur**, nicht Taupunkt, Luftfeuchtigkeit
+  oder andere Messwerte.
+- Bei einem Ausreißer (z. B. `32767 °C` durch einen Sensorfehler) erscheint
+  in der Kachel **„–“**, und die Raummonitor-Instanz erhält **Status 202**.
+- Die Quellvariable in IP-Symcon bleibt dabei unverändert. Sobald der Sensor
+  wieder einen gültigen Wert liefert, erscheint dieser automatisch.
+- Die Grenzen können global für die Raummonitor-Instanz angepasst werden.
+  **Untergrenze muss kleiner als Obergrenze** sein; andernfalls wird die
+  Konfiguration als fehlerhaft gemeldet (Status 201).
+- Für besondere Einsatzfälle lässt sich die Prüfung ausschalten. Dann werden
+  numerische Temperaturwerte unabhängig von diesen Grenzen angezeigt.
+
 ## Beispielkonfiguration
 
 Unter [docs/beispielkonfiguration.json](docs/beispielkonfiguration.json) gibt es ein kleines Beispiel.
@@ -190,8 +210,8 @@ Die Funktionen benutzen ausschließlich die vorhandenen Symcon-Variablen.
 | --- | --- |
 | 102 | Alles betriebsbereit |
 | 104 | Noch keine Räume eingerichtet |
-| 201 | Fehlerhafte Raum-/Licht-/Fensterliste oder doppelte Betriebsartwerte |
-| 202 | Konfigurierter Messwert fehlt oder ist nicht plausibel lesbar |
+| 201 | Fehlerhafte Raum-/Licht-/Fensterliste, doppelte Betriebsartwerte oder ungültige Temperaturgrenzen |
+| 202 | Konfigurierter Messwert fehlt, ist nicht lesbar oder die Ist-/Solltemperatur liegt außerhalb der Plausibilitätsgrenzen |
 
 Details zu fehlenden Variablen erscheinen im **Debug der Raummonitor-Instanz**.
 Das Modul zeigt nie einen vermeintlich geschlossenen Fensterstatus, wenn

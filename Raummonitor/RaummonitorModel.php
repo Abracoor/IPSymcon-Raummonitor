@@ -134,6 +134,15 @@ final class RaummonitorModel
             $mapping[0] = ['kind' => 'auto', 'label' => 'Automatik'];
         }
 
+        $validateTemperatures = (bool) ($options['ValidateTemperatures'] ?? true);
+        $temperatureMin = (float) ($options['MinimumTemperature'] ?? -20.0);
+        $temperatureMax = (float) ($options['MaximumTemperature'] ?? 60.0);
+        $validTemperatureRange = is_finite($temperatureMin) && is_finite($temperatureMax)
+            && $temperatureMin < $temperatureMax;
+        if ($validateTemperatures && !$validTemperatureRange) {
+            $configErrors[] = 'Temperatur-Untergrenze muss kleiner als die Obergrenze sein';
+        }
+
         foreach ($rooms as $index => $room) {
             if (!is_array($room)) {
                 $configErrors[] = 'Ungültige Raumzeile ' . ($index + 1);
@@ -158,6 +167,16 @@ final class RaummonitorModel
 
             $actual = self::number($valueOf($tempID));
             $setpoint = self::number($valueOf((int) ($room['SetpointTempID'] ?? 0)));
+            // Sensorfehler und Ausreißer nur in der Kachelauswertung verwerfen.
+            // Die originalen IP-Symcon-Variablen bleiben unverändert.
+            if ($validateTemperatures && $validTemperatureRange) {
+                if ($actual !== null && ($actual < $temperatureMin || $actual > $temperatureMax)) {
+                    $actual = null;
+                }
+                if ($setpoint !== null && ($setpoint < $temperatureMin || $setpoint > $temperatureMax)) {
+                    $setpoint = null;
+                }
+            }
             $humidity = self::number($valueOf((int) ($room['HumidityID'] ?? 0)));
             $co2 = self::number($valueOf((int) ($room['CO2ID'] ?? 0)));
             $dewPoint = self::number($valueOf((int) ($room['DewPointID'] ?? 0)));

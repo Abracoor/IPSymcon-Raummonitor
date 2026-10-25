@@ -33,9 +33,11 @@ class IPSModuleStrict
     public function ApplyChanges(): void { }
     protected function RegisterPropertyString(string $key, string $default): void { $this->properties[$key] = $default; }
     protected function RegisterPropertyInteger(string $key, int $default): void { $this->properties[$key] = $default; }
+    protected function RegisterPropertyFloat(string $key, float $default): void { $this->properties[$key] = $default; }
     protected function RegisterPropertyBoolean(string $key, bool $default): void { $this->properties[$key] = $default; }
     protected function ReadPropertyString(string $key): string { return $this->properties[$key]; }
     protected function ReadPropertyInteger(string $key): int { return $this->properties[$key]; }
+    protected function ReadPropertyFloat(string $key): float { return $this->properties[$key]; }
     protected function ReadPropertyBoolean(string $key): bool { return $this->properties[$key]; }
     protected function RegisterTimer(string $name, int $interval, string $code): void { $this->timers[$name] = $interval; }
     protected function SetTimerInterval(string $name, int $interval): void { $this->timers[$name] = $interval; }
@@ -82,6 +84,9 @@ verify($instance->status === 102, 'Instanzstatus ist aktiv');
 verify($instance->GetSnapshot()['modeCounts']['comfort'] === 1, 'DPT 20.102: 1 = Komfort auch in Modulvoreinstellung');
 verify($instance->GetSnapshot()['openWindows'] === 2, 'Fenster aus Einzelzuordnung und neuer Liste zusammengefasst');
 verify($instance->properties['AutoColumns'] === true, 'Spaltenautomatik ist standardmäßig aktiviert');
+verify($instance->properties['ValidateTemperatures'] === true, 'Temperaturprüfung standardmäßig aktiviert');
+verify($instance->properties['MinimumTemperature'] === -20.0, 'Temperatur-Untergrenze standardmäßig minus 20 Grad');
+verify($instance->properties['MaximumTemperature'] === 60.0, 'Temperatur-Obergrenze standardmäßig plus 60 Grad');
 verify($instance->GetSnapshot()['columns']['lights'] === false, 'Unbenutzte Lichtspalte wird automatisch verborgen');
 verify($instance->GetSnapshot()['columns']['window'] === true, 'Benutzte Fensterspalte bleibt sichtbar');
 verify($instance->visualizationType === 2, 'HTML-Vollbildtyp verwendet');
@@ -109,6 +114,16 @@ $GLOBALS['testValues'][11] = 0;
 $instance->MessageSink(time(), 11, VM_UPDATE, []);
 verify($instance->status === 102, 'KNX-Automatik ist gültig und hebt den Fehlerstatus auf');
 verify($instance->GetSnapshot()['modeCounts']['auto'] === 1, 'Automatik-Modus in der Instanzauswertung erkannt');
+
+$GLOBALS['testValues'][10] = 32767;
+$instance->MessageSink(time(), 10, VM_UPDATE, []);
+verify($instance->status === 202, 'Unplausible Temperatur führt zu Fehlerstatus');
+verify($instance->GetSnapshot()['groups'][0]['rooms'][0]['actual'] === null,
+    'Unplausible Temperatur wird nicht in der Kachel ausgegeben');
+
+$GLOBALS['testValues'][10] = 21.5;
+$instance->MessageSink(time(), 10, VM_UPDATE, []);
+verify($instance->status === 102, 'Gültige Temperatur hebt den Fehlerstatus wieder auf');
 
 unset($GLOBALS['testValues'][10]);
 $instance->MessageSink(time(), 10, VM_DELETE, []);

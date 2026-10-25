@@ -86,12 +86,31 @@ Die Farben werden sparsam für Status-Chips und Kennzahlen eingesetzt. Die
 Hintergründe beziehen ihre Grundfarbe aus dem Symcon-Theme; die Tabellen sind
 horizontal scrollbar, falls nicht alle Spalten in eine schmale Kachel passen.
 
+## Temperatur-Plausibilität
+
+Die Moduloption `ValidateTemperatures` ist standardmäßig `true`.
+`MinimumTemperature` (−20 °C) und `MaximumTemperature` (+60 °C) definieren
+ein inklusive Grenzen gültiges Intervall für **Ist- und Solltemperaturen**.
+Die Prüfung findet ausschließlich im Lesemodell nach dem Auslesen statt:
+Unplausible Temperaturwerte werden in der Kachel als fehlend (`null` bzw. „–“)
+behandelt; die vorhandene Quellvariable wird niemals überschrieben. Für eine
+zugeordnete und unplausible Variable wird die ID in `missingIDs` aufgenommen,
+was den Instanzstatus `202` auslöst. Sobald wieder ein plausibler Wert
+gelesen wird, verschwindet die Warnung von selbst.
+
+Ungültige Grenzen (Untergrenze größer oder gleich Obergrenze) ergeben bei
+aktiver Prüfung einen Konfigurationsfehler `201`. Die Prüfung kann für
+Sonderfälle deaktiviert werden. Die Grenzwerte gelten einheitlich für alle
+Räume einer Instanz. Andere Messwerttypen werden davon nicht beeinflusst.
+
 ## Betriebs- und Fehlerverhalten
 
 - `IS_ACTIVE (102)`: konfigurierte Räume mit gültigen Messwerten.
 - `IS_INACTIVE (104)`: keine Räume vorhanden.
-- `201`: fehlerhafte Konfiguration, doppelte Namen, nicht eindeutiges Modusmapping.
-- `202`: mindestens ein konfigurierter Wert fehlt oder hat ein inkompatibles Format.
+- `201`: fehlerhafte Konfiguration, doppelte Namen, nicht eindeutiges Modusmapping
+  oder ungültige Temperaturgrenzen bei aktiver Prüfung.
+- `202`: mindestens ein konfigurierter Wert fehlt, hat ein inkompatibles Format
+  oder verletzt die konfigurierten Ist-/Solltemperaturgrenzen.
 - Unbekannte Integer-Betriebsarten (z. B. `99`) erhalten den Status
   „Unbekannt (99)“ und führen ebenfalls zu `202`. Der gültige Modus `0=Automatik`
   bleibt ohne Fehlermeldung und wird bei Bedarf zusätzlich zusammengefasst.

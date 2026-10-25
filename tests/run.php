@@ -71,6 +71,36 @@ check($data['groups'][0]['rooms'][1]['heatingCooling'], 'Kühlen', 'Heizen/Kühl
 check($data['missingIDs'], [], 'Alle Werte verfügbar');
 check($reads, count(RaummonitorModel::configuredIDs($rooms, $lights)), 'Jede referenzierte Variable genau einmal gelesen');
 
+// Konfigurierbare Temperatur-Plausibilität inkl. Grenzwerten und Rückkehr.
+$values[1] = 32767;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader);
+check($data['groups'][0]['rooms'][1]['actual'], null, 'Unplausible Isttemperatur wird nicht angezeigt');
+check(in_array(1, $data['missingIDs'], true), true, 'Unplausible Isttemperatur wird diagnostiziert');
+check($data['columns']['setpoint'], true, 'Plausibilitätsfehler blendet keine konfigurierte Spalte aus');
+
+$data = RaummonitorModel::build($rooms, $lights, ['ValidateTemperatures' => false], $reader);
+check($data['groups'][0]['rooms'][1]['actual'], 32767.0, 'Abgeschaltete Plausibilitätsprüfung lässt Rohwerte zu');
+$values[1] = 21.4;
+
+$values[2] = -20;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader);
+check($data['groups'][0]['rooms'][1]['setpoint'], -20.0, 'Untergrenze ist eingeschlossen');
+$values[2] = 60;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader);
+check($data['groups'][0]['rooms'][1]['setpoint'], 60.0, 'Obergrenze ist eingeschlossen');
+$values[2] = 60.1;
+$data = RaummonitorModel::build($rooms, $lights, [], $reader);
+check($data['groups'][0]['rooms'][1]['setpoint'], null, 'Sollwert oberhalb der Obergrenze wird verworfen');
+$values[2] = 22.0;
+
+$data = RaummonitorModel::build($rooms, $lights,
+    ['MinimumTemperature' => 22.0, 'MaximumTemperature' => 25.0], $reader);
+check($data['groups'][0]['rooms'][1]['actual'], null, 'Individuelle Temperaturgrenzen werden verwendet');
+
+$data = RaummonitorModel::build($rooms, $lights,
+    ['MinimumTemperature' => 70.0, 'MaximumTemperature' => 60.0], $reader);
+check(count($data['configurationErrors']) > 0, true, 'Vertauschte Temperaturgrenzen werden als Konfigurationsfehler gemeldet');
+
 // QA: Der KNX-Modus 0 ist gültig, unbekannte Codes dagegen nicht.
 $values[3] = 0;
 $data = RaummonitorModel::build($rooms, $lights, [], $reader);

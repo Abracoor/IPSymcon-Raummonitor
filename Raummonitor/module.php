@@ -33,6 +33,9 @@ class Raummonitor extends IPSModuleStrict
         $this->RegisterPropertyBoolean('GroupRooms', true);
         $this->RegisterPropertyBoolean('AutoColumns', true);
         $this->RegisterPropertyBoolean('ShowExtraColumns', false);
+        $this->RegisterPropertyBoolean('ValidateTemperatures', true);
+        $this->RegisterPropertyFloat('MinimumTemperature', -20.0);
+        $this->RegisterPropertyFloat('MaximumTemperature', 60.0);
         $this->RegisterPropertyInteger('RefreshSeconds', 0);
 
         // Optionaler Sicherheitsabgleich; regulär ist die Kachel ereignisgesteuert.
@@ -199,7 +202,10 @@ class Raummonitor extends IPSModuleStrict
             'CoolingWhenTrue' => $this->ReadPropertyBoolean('CoolingWhenTrue'),
             'GroupRooms' => $this->ReadPropertyBoolean('GroupRooms'),
             'AutoColumns' => $this->ReadPropertyBoolean('AutoColumns'),
-            'ShowExtraColumns' => $this->ReadPropertyBoolean('ShowExtraColumns')
+            'ShowExtraColumns' => $this->ReadPropertyBoolean('ShowExtraColumns'),
+            'ValidateTemperatures' => $this->ReadPropertyBoolean('ValidateTemperatures'),
+            'MinimumTemperature' => $this->ReadPropertyFloat('MinimumTemperature'),
+            'MaximumTemperature' => $this->ReadPropertyFloat('MaximumTemperature')
         ];
     }
 

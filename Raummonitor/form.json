@@ -121,6 +121,22 @@
         {"type": "CheckBox", "name": "GroupRooms", "caption": "Räume nach Gruppe / Etage zusammenfassen"},
         {"type": "CheckBox", "name": "AutoColumns", "caption": "Tabellenspalten automatisch nach verwendeten Variablen anzeigen (Standard)"},
         {"type": "CheckBox", "name": "ShowExtraColumns", "caption": "Optionale Klima-Spalten (Feuchte, CO₂, Taupunkt, Heizen/Kühlen) anzeigen"},
+        {
+            "type": "ExpansionPanel",
+            "caption": "Plausibilitätsprüfung für Raumtemperaturen",
+            "expanded": false,
+            "items": [
+                {"type": "CheckBox", "name": "ValidateTemperatures", "caption": "Ist- und Solltemperaturen auf plausiblen Bereich prüfen"},
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {"type": "NumberSpinner", "name": "MinimumTemperature", "caption": "Untergrenze", "digits": 1, "suffix": "°C", "minimum": -273, "maximum": 200, "width": "160px"},
+                        {"type": "NumberSpinner", "name": "MaximumTemperature", "caption": "Obergrenze", "digits": 1, "suffix": "°C", "minimum": -273, "maximum": 200, "width": "160px"}
+                    ]
+                },
+                {"type": "Label", "caption": "Standard: −20 bis +60 °C. Bei Über- oder Unterschreitung zeigt die Kachel – und die Instanz meldet Status 202. Die Originalvariablen werden nicht verändert. Die Untergrenze muss kleiner als die Obergrenze sein."}
+            ]
+        },
         {"type": "NumberSpinner", "name": "RefreshSeconds", "caption": "Zusätzliche zyklische Aktualisierung in Sekunden (0 = nur bei Änderung)", "minimum": 0, "maximum": 3600}
     ],
     "actions": [

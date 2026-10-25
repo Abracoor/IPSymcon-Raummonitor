@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.8 – Konfigurierbare Temperatur-Plausibilitätsprüfung (25.10.2026)
+
+- Automatische Prüfung der Ist- und Solltemperaturen mit Standardgrenzen
+  −20 bis +60 °C (Grenzen eingeschlossen); beide Werte sind konfigurierbar.
+- Unplausible Temperaturen erscheinen als „–“ und erzeugen Instanzstatus 202,
+  ohne die Quellvariablen zu verändern. Gültige Werte stellen Status und
+  Kachelanzeige automatisch wieder her.
+- Plausibilitätsprüfung abschaltbar; ungültige Grenzkonfiguration führt
+  bei aktiver Prüfung zu Status 201.
+- Modell- und Modulprüfungen um Sensorausreißer, Grenzwerte und Fehlerbehebung
+  ergänzt.
+
 ## 1.0.7 – Automatikbetrieb und Fehlererkennung für HVAC (25.10.2026)
 
 - KNX DPT 20.102: gültigen Wert `0` als „Automatik“ darstellen; die
