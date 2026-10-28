@@ -14,10 +14,13 @@ assert.ok(script, 'Kachel enthält JavaScript');
 const form = JSON.parse(fs.readFileSync(path.join(__dirname, '../Raummonitor/form.json'), 'utf8'));
 const rooms = form.elements.find(element => element.name === 'Rooms');
 assert.ok(rooms, 'Konfigurator enthält die Raumliste');
-assert.ok(!rooms.columns.find(column => column.name === 'ActualTempID').caption.includes('*'),
-    'Isttemperatur ist in der Tabellenübersicht nicht als Pflichtfeld markiert');
-assert.ok(!rooms.form.find(element => element.name === 'ActualTempID').caption.includes('*'),
-    'Isttemperatur ist im Raumdialog nicht als Pflichtfeld markiert');
+assert.equal(rooms.columns.find(column => column.name === 'ActualTempID').visible, false,
+    'Isttemperatur wird wie die übrigen optionalen Zuordnungen aus der Raumliste ausgeblendet');
+assert.ok(!rooms.form.some(element => element.name === 'ActualTempID'),
+    'Isttemperatur steht nicht mehr direkt unter dem Raumnamen');
+const roomValues = rooms.form.find(element => element.caption.includes('Heizung, Fenster'));
+assert.ok(roomValues.items.some(element => element.name === 'ActualTempID'),
+    'Isttemperatur steht bei den optionalen Raumwerten');
 
 const context = vm.createContext({});
 vm.runInContext(script, context);
@@ -33,6 +36,8 @@ assert.deepEqual(columnNames({actual: false}), ['name'],
 assert.deepEqual(columnNames({actual: false, lights: true, window: true}),
     ['name', 'lights', 'window'],
     'Licht und Fenster sind ohne Isttemperatur möglich');
+assert.deepEqual(columnNames({actual: false, presence: true}), ['name', 'presence'],
+    'Präsenz kann ohne Isttemperatur angezeigt werden');
 assert.deepEqual(columnNames({actual: false, setpoint: true}), ['name', 'setpoint'],
     'Solltemperatur kann ohne Isttemperatur angezeigt werden');
 assert.deepEqual(columnNames({actual: true, lights: true}), ['name', 'actual', 'lights'],

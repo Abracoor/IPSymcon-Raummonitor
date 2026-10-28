@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.17 – Präsenzmelder und vereinheitlichte Raumkonfiguration (28.10.2026)
+
+- Optionaler Präsenzstatus pro Raum über eine einzelne Boolean-Variable und
+  eine zusätzliche Liste für beliebig viele Präsenzmelder; Invertierung je
+  Melder und Schutz gegen doppelte Zuordnung derselben Variablen-ID.
+- Meldet mindestens ein Sensor Präsenz, wird der Raum als „erkannt“ angezeigt.
+  Sind alle Sensorwerte negativ, erscheint „keine erkannt“. Fehlende Werte
+  werden sichtbar markiert statt eine vermeintlich freie Belegung zu melden.
+- Dynamische Tabellenspalte „Präsenz“ und optionale Kennzahl „Räume mit Präsenz“
+  (Raumzahl, nicht Melderzahl), automatische Aktualisierung bei Änderungen.
+- Isttemperatur in den aufklappbaren Bereich mit den übrigen optionalen
+  Raumwerten verschoben; die kompakte Raumliste zeigt nur Gruppe und Raumname.
+  Bereits gespeicherte Variablen-IDs werden dabei nicht geändert.
+- Modell-, Modulintegrations- und JavaScript-Tests für die Erweiterung ergänzt.
+
 ## 1.0.16 – Alle Messwerte optional, nur Raumname erforderlich (25.10.2026)
 
 - Die Isttemperatur ist kein Pflichtfeld mehr. Licht-, Fenster-, Klima- oder

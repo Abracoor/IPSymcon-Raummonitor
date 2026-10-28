@@ -9,6 +9,8 @@
             "OperationModeID": 12347,
             "WindowID": 12348,
             "WindowInverted": false,
+            "PresenceID": 12354,
+            "PresenceInverted": false,
             "ValveID": 12349,
             "ValveMax": 100,
             "LightCountID": 0,
@@ -24,6 +26,9 @@
     ],
     "Windows": [
         {"Group": "Erdgeschoss", "Room": "Wohnzimmer", "Name": "Fenster rechts", "VariableID": 12352, "Invert": false}
+    ],
+    "Presences": [
+        {"Group": "Erdgeschoss", "Room": "Wohnzimmer", "Name": "Präsenzmelder hinten", "VariableID": 12355, "Invert": false}
     ],
     "Note": "Nur Dokumentation: Alle IDs sind fiktiv und vor Verwendung durch echte Symcon-Objekt-IDs zu ersetzen. DetailCategoryID muss die ID einer bestehenden Kategorie sein."
 }

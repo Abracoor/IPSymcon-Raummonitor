@@ -160,4 +160,43 @@ unset($GLOBALS['testValues'][10]);
 $instance->MessageSink(time(), 10, VM_DELETE, []);
 verify($instance->status === 202, 'Fehlender Istwert führt zu Fehlerstatus');
 
+// Neue Präsenzkonfiguration arbeitet mit einzelnen und mehreren Meldern,
+// ohne eine Isttemperatur oder bestehende Instanzen zu verlangen.
+$GLOBALS['testValues'][14] = false;
+$GLOBALS['testValues'][15] = true;
+$presenceInstance = new Raummonitor();
+$presenceInstance->properties['Rooms'] = json_encode([
+    ['Group' => 'EG', 'Room' => 'Schulungsraum', 'PresenceID' => 14]
+]);
+$presenceInstance->properties['Presences'] = json_encode([
+    ['Group' => 'EG', 'Room' => 'Schulungsraum', 'Name' => 'Hinten', 'VariableID' => 15]
+]);
+$presenceInstance->ApplyChanges();
+verify($presenceInstance->status === 102, 'Präsenzraum ohne Temperatur ist aktiv');
+verify(count($presenceInstance->references) === 2, 'Beide Präsenz-IDs werden referenziert');
+verify($presenceInstance->GetSnapshot()['columns']['presence'] === true,
+    'Präsenzspalte sichtbar, obwohl keine Temperatur konfiguriert ist');
+verify($presenceInstance->GetSnapshot()['columns']['actual'] === false,
+    'Istspalte bei reinem Präsenzraum ausgeblendet');
+verify($presenceInstance->GetSnapshot()['roomsWithPresence'] === 1, 'Ein Raum mit erkannter Präsenz');
+verify(str_contains($presenceInstance->GetVisualizationTile(), '"roomsWithPresence":1'),
+    'Präsenzkennzahl wird an die HTML-Kachel übergeben');
+
+$GLOBALS['testValues'][15] = false;
+$presenceInstance->MessageSink(time(), 15, VM_UPDATE, []);
+verify($presenceInstance->GetSnapshot()['roomsWithPresence'] === 0,
+    'Update des Zusatzmelders aktualisiert die Raumkennzahl');
+verify(count($presenceInstance->updates) === 2,
+    'Präsenzwechsel erzeugt automatisch ein Kachelupdate');
+
+unset($GLOBALS['testValues'][15]);
+$presenceInstance->MessageSink(time(), 15, VM_DELETE, []);
+verify($presenceInstance->status === 202, 'Nicht verfügbarer Präsenzmelder erzeugt Diagnose 202');
+verify($presenceInstance->GetSnapshot()['groups'][0]['rooms'][0]['presence'] === null,
+    'Fehlender Präsenzzustand wird nicht als frei dargestellt');
+
+$GLOBALS['testValues'][15] = true;
+$presenceInstance->MessageSink(time(), 15, VM_UPDATE, []);
+verify($presenceInstance->status === 102, 'Wieder gültiger Präsenzwert hebt Fehlerstatus auf');
+
 echo "\nAlle Modultests bestanden.\n";

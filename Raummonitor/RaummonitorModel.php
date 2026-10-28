@@ -12,12 +12,12 @@ declare(strict_types=1);
 final class RaummonitorModel
 {
     private const ROOM_IDS = [
-        'ActualTempID', 'SetpointTempID', 'OperationModeID', 'WindowID',
+        'ActualTempID', 'SetpointTempID', 'OperationModeID', 'WindowID', 'PresenceID',
         'ValveID', 'LightCountID', 'HumidityID', 'CO2ID', 'DewPointID',
         'HeatingCoolingID'
     ];
 
-    public static function configuredIDs(array $rooms, array $lights, array $windows = []): array
+    public static function configuredIDs(array $rooms, array $lights, array $windows = [], array $presences = []): array
     {
         $ids = [];
         foreach ($rooms as $room) {
@@ -41,10 +41,15 @@ final class RaummonitorModel
                 $ids[(int) $window['VariableID']] = true;
             }
         }
+        foreach ($presences as $presence) {
+            if (is_array($presence) && (int) ($presence['VariableID'] ?? 0) > 0) {
+                $ids[(int) $presence['VariableID']] = true;
+            }
+        }
         return array_keys($ids);
     }
 
-    public static function build(array $rooms, array $lights, array $options, callable $read, array $windows = []): array
+    public static function build(array $rooms, array $lights, array $options, callable $read, array $windows = [], array $presences = []): array
     {
         $configErrors = [];
         $missing = [];
@@ -52,11 +57,13 @@ final class RaummonitorModel
         $seenRooms = [];
         $count = ['comfort' => 0, 'standby' => 0, 'night' => 0, 'frost' => 0, 'auto' => 0, 'unknown' => 0];
         $openWindows = 0;
+        $roomsWithPresence = 0;
+        $presenceRoomsConfigured = 0;
         $cache = [];
         // Spalten gelten global für alle Gruppen. Ihre Sichtbarkeit hängt
         // von der Zuordnung einer ID ab, nicht von ihrem aktuellen Messwert.
         $columns = array_fill_keys([
-            'actual', 'setpoint', 'lights', 'mode', 'window', 'valve',
+            'actual', 'setpoint', 'lights', 'mode', 'window', 'presence', 'valve',
             'humidity', 'co2', 'dewPoint', 'heatingCooling'
         ], false);
 
@@ -117,6 +124,29 @@ final class RaummonitorModel
                 continue;
             }
             $windowsByRoom[$key][$id] = (bool) ($entry['Invert'] ?? false);
+        }
+
+        // Mehrere Präsenzmelder je Raum. Bei derselben Variablen-ID wird
+        // nur ein Melder ausgewertet; die zusätzliche Liste hat Vorrang.
+        $presencesByRoom = [];
+        foreach ($presences as $index => $entry) {
+            if (!is_array($entry)) {
+                $configErrors[] = 'Ungültiger Eintrag in der Präsenzliste: ' . ($index + 1);
+                continue;
+            }
+            $group = self::groupName($entry['Group'] ?? '');
+            $name = trim((string) ($entry['Room'] ?? ''));
+            $id = (int) ($entry['VariableID'] ?? 0);
+            if ($name === '' || $id <= 0) {
+                $configErrors[] = 'Präsenzzeile ' . ($index + 1) . ': Raum oder Variablen-ID fehlt';
+                continue;
+            }
+            $key = self::roomKey($group, $name);
+            if (isset($presencesByRoom[$key][$id])) {
+                $configErrors[] = 'Präsenzvariable ' . $id . ' im Raum ' . $name . ' doppelt';
+                continue;
+            }
+            $presencesByRoom[$key][$id] = (bool) ($entry['Invert'] ?? false);
         }
 
         $mapping = [
@@ -236,6 +266,37 @@ final class RaummonitorModel
             $window = $windowCount === 0 || ($windowIncomplete && $openWindowCount === 0)
                 ? null : $openWindowCount > 0;
 
+            $roomPresences = $presencesByRoom[$key] ?? [];
+            $presenceID = (int) ($room['PresenceID'] ?? 0);
+            if ($presenceID > 0 && !array_key_exists($presenceID, $roomPresences)) {
+                $roomPresences[$presenceID] = (bool) ($room['PresenceInverted'] ?? false);
+            }
+            $presenceCount = count($roomPresences);
+            if ($presenceCount > 0) {
+                $columns['presence'] = true;
+                $presenceRoomsConfigured++;
+            }
+            $activePresenceCount = 0;
+            $presenceIncomplete = false;
+            foreach ($roomPresences as $id => $invert) {
+                $state = self::switchState($valueOf((int) $id));
+                if ($state === null) {
+                    $missing[$id] = true;
+                    $presenceIncomplete = true;
+                    continue;
+                }
+                if ($invert ? !$state : $state) {
+                    $activePresenceCount++;
+                }
+            }
+            // Bei unbekanntem Melderwert nie fälschlich "keine Präsenz"
+            // ausgeben. Ein sicher positives Signal bleibt aber sichtbar.
+            $presence = $presenceCount === 0 || ($presenceIncomplete && $activePresenceCount === 0)
+                ? null : $activePresenceCount > 0;
+            if ($presence === true) {
+                $roomsWithPresence++;
+            }
+
             $valveID = (int) ($room['ValveID'] ?? 0);
             $valve = null;
             if ($valveID > 0) {
@@ -328,6 +389,10 @@ final class RaummonitorModel
                 'windowCount' => $windowCount,
                 'openWindowCount' => $openWindowCount,
                 'windowIncomplete' => $windowIncomplete,
+                'presence' => $presence,
+                'presenceCount' => $presenceCount,
+                'activePresenceCount' => $activePresenceCount,
+                'presenceIncomplete' => $presenceIncomplete,
                 'valve' => $valve,
                 'humidity' => $humidity,
                 'co2' => $co2,
@@ -344,6 +409,11 @@ final class RaummonitorModel
         foreach ($windowsByRoom as $key => $_) {
             if (!isset($seenRooms[$key])) {
                 $configErrors[] = 'Fensterzuordnung ohne passenden Raum: ' . str_replace("\0", ' / ', $key);
+            }
+        }
+        foreach ($presencesByRoom as $key => $_) {
+            if (!isset($seenRooms[$key])) {
+                $configErrors[] = 'Präsenzzuordnung ohne passenden Raum: ' . str_replace("\0", ' / ', $key);
             }
         }
 
@@ -387,6 +457,8 @@ final class RaummonitorModel
         return [
             'totalRooms' => $totalRooms,
             'openWindows' => $openWindows,
+            'roomsWithPresence' => $roomsWithPresence,
+            'presenceRoomsConfigured' => $presenceRoomsConfigured,
             'modeCounts' => $count,
             'groups' => $grouped,
             'showGroups' => (bool) ($options['GroupRooms'] ?? true),

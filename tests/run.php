@@ -265,4 +265,67 @@ $data = RaummonitorModel::build($onlyActual, [], [], $reader,
     [['Group' => 'EG', 'Room' => 'Minimal', 'VariableID' => 22]]);
 check($data['columns']['window'], true, 'Fensterliste allein aktiviert Spalte');
 
+// Präsenz: Ein oder mehrere Melder, optionale Einzelzuordnung, Invertierung,
+// Abgleich fehlender Werte und Zählung von Räumen statt einzelner Sensoren.
+$values[23] = false;
+$values[24] = true;
+$values[25] = false;
+$presenceRooms = [
+    ['Group' => 'EG', 'Room' => 'Schulungsraum', 'PresenceID' => 23],
+    ['Group' => 'EG', 'Room' => 'Labor'],
+    ['Group' => 'OG', 'Room' => 'Ohne Melder']
+];
+$presences = [
+    ['Group' => 'EG', 'Room' => 'Schulungsraum', 'Name' => 'Hinten', 'VariableID' => 24],
+    ['Group' => 'EG', 'Room' => 'Labor', 'VariableID' => 25, 'Invert' => true]
+];
+$data = RaummonitorModel::build($presenceRooms, [], [], $reader, [], $presences);
+check($data['totalRooms'], 3, 'Drei Räume auch ohne Temperatur und andere Werte');
+check($data['columns']['actual'], false, 'Präsenzräume benötigen keine Isttemperatur');
+check($data['columns']['presence'], true, 'Präsenz-Spalte wird dynamisch eingeblendet');
+check($data['presenceRoomsConfigured'], 2, 'Zwei Räume mit zugeordneten Präsenzmeldern');
+check($data['roomsWithPresence'], 2, 'Präsenz wird als Raumzahl, nicht als Melderzahl aggregiert');
+check($data['groups'][0]['rooms'][1]['presenceCount'], 2, 'Einzel- und Zusatzmelder ergänzen sich');
+check($data['groups'][0]['rooms'][1]['activePresenceCount'], 1, 'Einer von zwei Meldern meldet Präsenz');
+check($data['groups'][0]['rooms'][0]['presence'], true, 'Invertierte Meldung ist Präsenz');
+check($data['groups'][1]['rooms'][0]['presence'], null, 'Raum ohne Melder hat unbekannten Zustand');
+check($data['missingIDs'], [], 'Sämtliche Präsenzvariablen sind verfügbar');
+check(in_array(24, RaummonitorModel::configuredIDs($presenceRooms, [], [], $presences), true), true,
+    'Zusätzlicher Präsenzmelder wird für Änderungsnachrichten abonniert');
+
+$values[24] = false;
+$data = RaummonitorModel::build($presenceRooms, [], [], $reader, [], $presences);
+check($data['groups'][0]['rooms'][1]['presence'], false, 'Alle Präsenzmelder in Schulungsraum negativ');
+check($data['roomsWithPresence'], 1, 'Nur noch das Labor mit Präsenz');
+
+unset($values[24]);
+$data = RaummonitorModel::build($presenceRooms, [], [], $reader, [], $presences);
+check($data['groups'][0]['rooms'][1]['presence'], null, 'Fehlender Melder nie als sicher keine Präsenz');
+check($data['groups'][0]['rooms'][1]['presenceIncomplete'], true, 'Teilweise fehlender Präsenzstatus markiert');
+check($data['missingIDs'], [24], 'Fehlende Präsenzvariable wird diagnostiziert');
+
+$values[23] = true;
+$data = RaummonitorModel::build($presenceRooms, [], [], $reader, [], $presences);
+check($data['groups'][0]['rooms'][1]['presence'], true, 'Erkannte Präsenz trotz zweitem fehlenden Melder');
+check($data['groups'][0]['rooms'][1]['presenceIncomplete'], true, 'Teilfehler trotz erkannter Präsenz sichtbar');
+
+$presences[] = ['Group' => 'EG', 'Room' => 'Schulungsraum', 'VariableID' => 23, 'Invert' => true];
+$values[24] = false;
+$data = RaummonitorModel::build($presenceRooms, [], [], $reader, [], $presences);
+check($data['groups'][0]['rooms'][1]['presenceCount'], 2, 'Doppelte Präsenz-ID aus Raum und Liste nur einmal');
+check($data['groups'][0]['rooms'][1]['presence'], false, 'Invertierung aus der Zusatzliste hat Vorrang');
+array_pop($presences);
+
+$presences[] = ['Group' => 'EG', 'Room' => 'Nicht vorhanden', 'VariableID' => 24];
+$data = RaummonitorModel::build($presenceRooms, [], [], $reader, [], $presences);
+check(count($data['configurationErrors']) > 0, true, 'Präsenzzuordnung ohne Raum wird gemeldet');
+array_pop($presences);
+
+$noPresence = RaummonitorModel::build([['Room' => 'Ohne Melder']], [], [], $reader);
+check($noPresence['columns']['presence'], false, 'Präsenz bleibt ohne Zuordnung unsichtbar');
+check($noPresence['presenceRoomsConfigured'], 0, 'Keine Präsenz-Kennzahl ohne Melderkonfiguration');
+check($noPresence['roomsWithPresence'], 0, 'Ohne Melder keine erkannten Räume');
+$fullPresence = RaummonitorModel::build([['Room' => 'Ohne Melder']], [], ['AutoColumns' => false], $reader);
+check($fullPresence['columns']['presence'], true, 'Manuelle Vollansicht zeigt auch Präsenzspalte');
+
 echo "\nAlle Modelltests bestanden.\n";

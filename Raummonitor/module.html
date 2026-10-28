@@ -37,6 +37,7 @@
     .rm-stat-value { font-variant-numeric: tabular-nums; font-size: 1.55em; line-height: 1.22; font-weight: 650; }
     .rm-stat[data-kind="window"] .rm-stat-value { color: var(--rm-blue); }
     .rm-stat[data-kind="comfort"] .rm-stat-value { color: var(--rm-green); }
+    .rm-stat[data-kind="presence"] .rm-stat-value { color: var(--rm-green); }
     .rm-stat[data-kind="standby"] .rm-stat-value { color: var(--rm-amber); }
     .rm-stat[data-kind="night"] .rm-stat-value { color: var(--rm-gray); }
     .rm-stat[data-kind="frost"] .rm-stat-value { color: var(--rm-blue); }
@@ -63,11 +64,11 @@
     .rm-value { font-variant-numeric: tabular-nums; }
     .rm-dash { color: var(--rm-subtle); }
     .rm-pill { display: inline-block; border-radius: 999px; border: 1px solid transparent; padding: .22rem .52rem; line-height: 1.35; font-size: .91em; font-weight: 650; }
-    .rm-pill[data-state="comfort"], .rm-pill[data-state="closed"] { color: var(--rm-green); border-color: color-mix(in srgb, var(--rm-green) 28%, transparent); background: color-mix(in srgb, var(--rm-green) 13%, transparent); }
+    .rm-pill[data-state="comfort"], .rm-pill[data-state="closed"], .rm-pill[data-state="presence-on"] { color: var(--rm-green); border-color: color-mix(in srgb, var(--rm-green) 28%, transparent); background: color-mix(in srgb, var(--rm-green) 13%, transparent); }
     .rm-pill[data-state="standby"], .rm-pill[data-state="light-on"] { color: var(--rm-amber); border-color: color-mix(in srgb, var(--rm-amber) 28%, transparent); background: color-mix(in srgb, var(--rm-amber) 13%, transparent); }
     .rm-pill[data-state="night"], .rm-pill[data-state="auto"] { color: var(--rm-gray); border-color: color-mix(in srgb, var(--rm-gray) 28%, transparent); background: color-mix(in srgb, var(--rm-gray) 13%, transparent); }
     .rm-pill[data-state="frost"], .rm-pill[data-state="open"] { color: var(--rm-blue); border-color: color-mix(in srgb, var(--rm-blue) 28%, transparent); background: color-mix(in srgb, var(--rm-blue) 13%, transparent); }
-    .rm-pill[data-state="unknown"], .rm-pill[data-state="light-off"] { color: var(--rm-subtle); border-color: var(--rm-line); background: var(--rm-soft); }
+    .rm-pill[data-state="unknown"], .rm-pill[data-state="light-off"], .rm-pill[data-state="presence-off"] { color: var(--rm-subtle); border-color: var(--rm-line); background: var(--rm-soft); }
     .rm-valve { display: flex; align-items: center; gap: .35rem; }
     .rm-bar { height: .4rem; width: 2.25rem; border-radius: 999px; background: var(--rm-line); overflow: hidden; }
     .rm-bar > span { display: block; height: 100%; background: var(--rm-green); border-radius: 999px; }
@@ -84,7 +85,7 @@
 </style>
 <div class="rm-root" id="rm-root">
     <div class="rm-content">
-        <div class="rm-head"><strong>Raummonitor</strong><small>Räume · Klima · Licht · Fenster</small></div>
+        <div class="rm-head"><strong>Raummonitor</strong><small>Räume · Klima · Licht · Fenster · Präsenz</small></div>
         <div class="rm-stats" id="rm-stats" aria-label="Zusammenfassung"></div>
         <div id="rm-warning" class="rm-warning" hidden></div>
         <div id="rm-groups"></div>
@@ -134,7 +135,7 @@
 
     function rmPill(label, state) {
         const element = rmNode('span', 'rm-pill', label);
-        element.dataset.state = ['comfort', 'standby', 'night', 'frost', 'auto', 'unknown', 'open', 'closed', 'light-on', 'light-off'].includes(state)
+        element.dataset.state = ['comfort', 'standby', 'night', 'frost', 'auto', 'unknown', 'open', 'closed', 'light-on', 'light-off', 'presence-on', 'presence-off'].includes(state)
             ? state : 'unknown';
         return element;
     }
@@ -198,6 +199,20 @@
         return pill;
     }
 
+    function rmPresence(room) {
+        const total = Number.isInteger(room.presenceCount) ? room.presenceCount : 0;
+        const active = Number.isInteger(room.activePresenceCount) ? room.activePresenceCount : 0;
+        const incomplete = Boolean(room.presenceIncomplete);
+        if (total === 0) return rmNode('span', 'rm-dash', '–');
+
+        const pill = active > 0
+            ? rmPill('erkannt' + (incomplete ? ' *' : ''), 'presence-on')
+            : incomplete ? rmPill('unbekannt', 'unknown') : rmPill('keine erkannt', 'presence-off');
+        pill.title = active + ' von ' + total + ' Meldern melden Präsenz'
+            + (incomplete ? ' (mindestens ein Melderstatus fehlt)' : '');
+        return pill;
+    }
+
     // Dieselbe globale Spaltenliste wird für jede Etage verwendet.
     function rmVisibleColumns(data) {
         const definitions = [
@@ -207,6 +222,7 @@
             {key: 'lights', label: 'Licht', width: 67},
             {key: 'mode', label: 'Modus', width: 108},
             {key: 'window', label: 'Fenster', width: 150},
+            {key: 'presence', label: 'Präsenz', width: 128},
             {key: 'valve', label: 'Ventil', width: 112},
             {key: 'humidity', label: 'Feuchte', width: 94, extra: true},
             {key: 'co2', label: 'CO₂', width: 96, extra: true},
@@ -235,6 +251,7 @@
             case 'mode': return room.mode && room.mode.label
                 ? rmPill(room.mode.label, room.mode.kind) : rmNode('span', 'rm-dash', '–');
             case 'window': return rmWindow(room);
+            case 'presence': return rmPresence(room);
             case 'valve': return rmValve(room.valve);
             case 'humidity': return rmNumber(room.humidity, 0, ' %');
             case 'co2': return rmNumber(room.co2, 0, ' ppm');
@@ -296,6 +313,9 @@
         ];
         // Nur bei Bedarf eine zusätzliche Automatik-Kennzahl einblenden.
         if ((Number(modes.auto) || 0) > 0) cards.push(rmStat('Automatik', modes.auto, 'auto'));
+        if ((Number(data.presenceRoomsConfigured) || 0) > 0) {
+            cards.push(rmStat('Räume mit Präsenz', data.roomsWithPresence || 0, 'presence'));
+        }
         stats.replaceChildren(...cards);
         const issueCount = Number(data.issueCount) || 0;
         warning.hidden = issueCount === 0;

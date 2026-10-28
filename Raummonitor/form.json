@@ -15,12 +15,14 @@
             "columns": [
                 {"name": "Group", "caption": "Gruppe / Etage", "width": "150px", "add": "", "edit": {"type": "ValidationTextBox"}},
                 {"name": "Room", "caption": "Raumname *", "width": "auto", "add": "", "edit": {"type": "ValidationTextBox"}},
-                {"name": "ActualTempID", "caption": "Isttemperatur", "width": "240px", "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "ActualTempID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "DetailCategoryID", "visible": false, "add": 1, "edit": {"type": "SelectCategory"}},
                 {"name": "SetpointTempID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "OperationModeID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "WindowID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "WindowInverted", "visible": false, "add": false, "edit": {"type": "CheckBox"}},
+                {"name": "PresenceID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "PresenceInverted", "visible": false, "add": false, "edit": {"type": "CheckBox"}},
                 {"name": "ValveID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
                 {"name": "ValveMax", "visible": false, "add": 100, "edit": {"type": "NumberSpinner", "minimum": 1, "maximum": 65535}},
                 {"name": "LightCountID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
@@ -33,7 +35,6 @@
                 {"type": "Label", "caption": "Raumname (Pflicht); Etage und sämtliche Messwerte sind optional"},
                 {"type": "ValidationTextBox", "name": "Group", "caption": "Gruppe / Etage (optional)"},
                 {"type": "ValidationTextBox", "name": "Room", "caption": "Raumname *"},
-                {"type": "SelectVariable", "name": "ActualTempID", "caption": "Isttemperatur (optional)"},
                 {
                     "type": "ExpansionPanel",
                     "caption": "Navigation zur Detailseite (optional)",
@@ -45,14 +46,18 @@
                 },
                 {
                     "type": "ExpansionPanel",
-                    "caption": "Heizung, Fenster und Licht (optional)",
+                    "caption": "Heizung, Fenster, Licht und Präsenz (optional)",
                     "expanded": false,
                     "items": [
+                        {"type": "SelectVariable", "name": "ActualTempID", "caption": "Isttemperatur"},
                         {"type": "SelectVariable", "name": "SetpointTempID", "caption": "Solltemperatur"},
                         {"type": "SelectVariable", "name": "OperationModeID", "caption": "Betriebsart"},
                         {"type": "SelectVariable", "name": "WindowID", "caption": "Fensterkontakt"},
                         {"type": "Label", "caption": "Optional: Weitere Fensterkontakte können unten in der separaten Fensterliste ergänzt werden."},
                         {"type": "CheckBox", "name": "WindowInverted", "caption": "Fenster invertieren (true = geschlossen)"},
+                        {"type": "SelectVariable", "name": "PresenceID", "caption": "Präsenzmelder"},
+                        {"type": "Label", "caption": "Optional: Weitere Präsenzmelder können unten in der separaten Präsenzliste ergänzt werden."},
+                        {"type": "CheckBox", "name": "PresenceInverted", "caption": "Präsenz invertieren (true = keine Präsenz)"},
                         {"type": "SelectVariable", "name": "ValveID", "caption": "Ventilstellung"},
                         {"type": "NumberSpinner", "name": "ValveMax", "caption": "Ventil-Rohwert für 100 %", "minimum": 1, "maximum": 65535},
                         {"type": "SelectVariable", "name": "LightCountID", "caption": "Fertige Lichtanzahl (alternativ zur Lichtliste)"}
@@ -73,7 +78,7 @@
         },
         {
             "type": "Label",
-            "caption": "Auch reine Licht-, Fenster- oder Navigationsräume sind möglich. Ein Raum ohne Variablen und ohne Detailseite wird nur mit Namen angezeigt. Lichter: Pro Leuchte eine Zeile in der zweiten Liste eintragen; Gruppe und Raum müssen exakt einer Zeile oben entsprechen. Eine vorhandene Lichtanzahl-Variable im Raum hat Vorrang."
+            "caption": "Auch reine Licht-, Fenster-, Präsenz- oder Navigationsräume sind möglich. Ein Raum ohne Variablen und ohne Detailseite wird nur mit Namen angezeigt. Lichter: Pro Leuchte eine Zeile in der zweiten Liste eintragen; Gruppe und Raum müssen exakt einer Zeile oben entsprechen. Eine vorhandene Lichtanzahl-Variable im Raum hat Vorrang."
         },
         {
             "type": "List",
@@ -115,6 +120,33 @@
                 {"type": "ValidationTextBox", "name": "Name", "caption": "Fensterbezeichnung (optional)"},
                 {"type": "SelectVariable", "name": "VariableID", "caption": "Fensterkontaktvariable"},
                 {"type": "CheckBox", "name": "Invert", "caption": "Kontakt invertieren (true = geschlossen)"}
+            ]
+        },
+        {
+            "type": "Label",
+            "caption": "Mehrere Präsenzmelder: Pro Melder eine Zeile anlegen. Gruppe und Raum müssen zur Raumliste passen. Der Melder im Raumdialog gilt zusätzlich; gleiche Variablen-IDs werden pro Raum nur einmal ausgewertet. Präsenz bedeutet einen gemeldeten Sensorzustand, nicht eine sichere Raumbelegung."
+        },
+        {
+            "type": "List",
+            "name": "Presences",
+            "caption": "Präsenzmelder je Raum (optional)",
+            "rowCount": 6,
+            "add": true,
+            "delete": true,
+            "changeOrder": true,
+            "columns": [
+                {"name": "Group", "caption": "Gruppe / Etage", "width": "150px", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "Room", "caption": "Raumname", "width": "auto", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "Name", "caption": "Melder", "width": "180px", "add": "", "edit": {"type": "ValidationTextBox"}},
+                {"name": "VariableID", "visible": false, "add": 0, "edit": {"type": "SelectVariable"}},
+                {"name": "Invert", "visible": false, "add": false, "edit": {"type": "CheckBox"}}
+            ],
+            "form": [
+                {"type": "ValidationTextBox", "name": "Group", "caption": "Gruppe / Etage (wie in der Raumliste)"},
+                {"type": "ValidationTextBox", "name": "Room", "caption": "Raumname (wie in der Raumliste)"},
+                {"type": "ValidationTextBox", "name": "Name", "caption": "Melderbezeichnung (optional)"},
+                {"type": "SelectVariable", "name": "VariableID", "caption": "Präsenzvariable"},
+                {"type": "CheckBox", "name": "Invert", "caption": "Präsenz invertieren (true = keine Präsenz)"}
             ]
         },
         {"type": "Label", "caption": "KNX DPT 20.102 (HVAC-Modus): 0=Automatik, 1=Komfort, 2=Standby, 3=Nacht/Economy, 4=Frost-/Hitzeschutz. 0=Automatik wird automatisch erkannt; eine individuelle Zuordnung des Werts 0 zu einem der vier Modi hat Vorrang."},

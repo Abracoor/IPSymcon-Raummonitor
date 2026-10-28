@@ -22,6 +22,7 @@ class Raummonitor extends IPSModuleStrict
         $this->RegisterPropertyString('Rooms', '[]');
         $this->RegisterPropertyString('Lights', '[]');
         $this->RegisterPropertyString('Windows', '[]');
+        $this->RegisterPropertyString('Presences', '[]');
         // KNX DPT 20.102: 0=Auto, 1=Komfort, 2=Standby,
         // 3=Economy/Nacht, 4=Frost-/Hitzeschutz.
         // Die Werte bleiben für andere Systeme frei konfigurierbar.
@@ -73,8 +74,8 @@ class Raummonitor extends IPSModuleStrict
             return;
         }
 
-        [$rooms, $lights, $windows] = $this->configurationLists();
-        foreach (RaummonitorModel::configuredIDs($rooms, $lights, $windows) as $id) {
+        [$rooms, $lights, $windows, $presences] = $this->configurationLists();
+        foreach (RaummonitorModel::configuredIDs($rooms, $lights, $windows, $presences) as $id) {
             if (!IPS_VariableExists($id)) {
                 continue;
             }
@@ -104,7 +105,7 @@ class Raummonitor extends IPSModuleStrict
      */
     public function GetSnapshot(): array
     {
-        [$rooms, $lights, $windows, $validJSON] = $this->configurationLists();
+        [$rooms, $lights, $windows, $presences, $validJSON] = $this->configurationLists();
         $options = $this->options();
 
         $snapshot = RaummonitorModel::build(
@@ -121,10 +122,11 @@ class Raummonitor extends IPSModuleStrict
                     return null;
                 }
             },
-            $windows
+            $windows,
+            $presences
         );
         if (!$validJSON) {
-            $snapshot['configurationErrors'][] = 'Ungültiges JSON in der Raum-, Licht- oder Fensterliste';
+            $snapshot['configurationErrors'][] = 'Ungültiges JSON in der Raum-, Licht-, Fenster- oder Präsenzliste';
         }
         return $snapshot;
     }
@@ -179,17 +181,19 @@ class Raummonitor extends IPSModuleStrict
         return $html . '<script>handleMessage(' . $json . ');</script>';
     }
 
-    /** @return array{0: array, 1: array, 2: array, 3: bool} */
+    /** @return array{0: array, 1: array, 2: array, 3: array, 4: bool} */
     private function configurationLists(): array
     {
         $rooms = json_decode($this->ReadPropertyString('Rooms'), true);
         $lights = json_decode($this->ReadPropertyString('Lights'), true);
         $windows = json_decode($this->ReadPropertyString('Windows'), true);
+        $presences = json_decode($this->ReadPropertyString('Presences'), true);
         $valid = is_array($rooms) && array_is_list($rooms)
             && is_array($lights) && array_is_list($lights)
-            && is_array($windows) && array_is_list($windows);
+            && is_array($windows) && array_is_list($windows)
+            && is_array($presences) && array_is_list($presences);
         return [is_array($rooms) ? $rooms : [], is_array($lights) ? $lights : [],
-            is_array($windows) ? $windows : [], $valid];
+            is_array($windows) ? $windows : [], is_array($presences) ? $presences : [], $valid];
     }
 
     private function options(): array
@@ -215,6 +219,8 @@ class Raummonitor extends IPSModuleStrict
         return [
             'totalRooms' => $state['totalRooms'],
             'openWindows' => $state['openWindows'],
+            'roomsWithPresence' => $state['roomsWithPresence'],
+            'presenceRoomsConfigured' => $state['presenceRoomsConfigured'],
             'modeCounts' => $state['modeCounts'],
             'groups' => $state['groups'],
             'showGroups' => $state['showGroups'],

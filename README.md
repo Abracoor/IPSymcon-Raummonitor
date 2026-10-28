@@ -1,16 +1,17 @@
 # Raummonitor für IP-Symcon 9.x
 
 Ein eigenständiges Modul für eine moderne Kachelübersicht zu Licht, Fenstern,
-Heizung und Raumklima. Mehrere Räume lassen sich nach Etage oder beliebigen Gruppen
+Präsenz, Heizung und Raumklima. Mehrere Räume lassen sich nach Etage oder beliebigen Gruppen
 zusammenfassen. Geeignet für KNX-Anlagen, funktioniert aber ebenso mit
 beliebigen IP-Symcon-Variablen aus anderen Systemen.
 
 **Entwickler/GitHub:** [Abracoor](https://github.com/Abracoor)  
 **Repository:** `https://github.com/Abracoor/IPSymcon-Raummonitor`
 
-**Aktueller Stand:** Build 16. Die Kernfunktionen wurden in IP-Symcon 9.x
-praktisch getestet (Raumkonfigurationen ohne Temperatur, Licht, Fenster,
-Ist-/Solltemperatur und automatische Spaltenanpassung).
+**Aktueller Stand:** Build 17. Die Kernfunktionen von Build 16 wurden in
+IP-Symcon 9.x praktisch getestet. Die neue Präsenzfunktion und die vereinheitlichte
+Raumkonfiguration von Build 17 sind automatisiert geprüft; der Praxistest in
+IP-Symcon steht noch aus.
 
 ## Funktionen
 
@@ -18,11 +19,12 @@ Ist-/Solltemperatur und automatische Spaltenanpassung).
 - Farbige Statusanzeigen mit separaten Farbpaletten für das helle und dunkle
   Symcon-Design; das aktive Design wird automatisch erkannt.
 - Kennzahlen: konfigurierte Räume, offene Fenster, Komfort, Standby, Nacht,
-  Frostschutz.
+  Frostschutz sowie bei konfigurierten Präsenzmeldern Räume mit Präsenz.
 - Tabelle nach Raumname sortiert, optional nach Gruppen/Etagen gegliedert.
 - Je Raum: Isttemperatur, Solltemperatur, Lichtanzahl, Betriebsart,
   Fensterzustand, Ventilstellung. Nur der Raumname ist Pflicht.
 - Mehrere Fensterkontakte pro Raum mit Anzeige der geöffneten Kontakte.
+- Optional mehrere Präsenzmelder pro Raum mit gemeinsamer Statusanzeige.
 - Optionale Spalten automatisch ausblenden, wenn sie in keinem Raum konfiguriert sind.
 - Zusätzliche optionale Spalten: Luftfeuchte, CO₂, Taupunkt, Heizen/Kühlen.
 - Live-Aktualisierung bei Variablenänderungen, optional periodischer Abgleich.
@@ -54,9 +56,8 @@ Ist-/Solltemperatur und automatische Spaltenanpassung).
 
 In der Instanz gibt es die Liste **„Räume und Messwerte“**. Mit dem
 **Hinzufügen**-Button eine Zeile je Raum anlegen. Die kompakte Liste zeigt nur
-Gruppe, Raumname und die optionale Isttemperatur. Beim Hinzufügen oder
-Bearbeiten öffnet sich ein Dialog mit allen Feldern; weitere Angaben sind
-in aufklappbaren Bereichen untergebracht.
+Gruppe und Raumname. Beim Hinzufügen oder Bearbeiten öffnet sich ein Dialog;
+**sämtliche Messwerte, auch die Isttemperatur**, stehen in aufklappbaren Bereichen.
 
 | Feld | Erforderlich | Verwendung |
 | --- | --- | --- |
@@ -67,6 +68,7 @@ in aufklappbaren Bereichen untergebracht.
 | Solltemperatur | Nein | Variable in Grad Celsius |
 | Betriebsart | Nein | Integerwert; KNX DPT 20.102 als Vorgabe 1–4 |
 | Fensterkontakt | Nein | Optionaler Einzelkontakt; zusätzliche Kontakte in der Fensterliste |
+| Präsenzmelder | Nein | Optionaler Einzelmelder; weitere Melder in der separaten Präsenzliste |
 | Ventilstellung | Nein | Numerisch; standardmäßig 0–100 % |
 | Lichtanzahl | Nein | Bereits vorhandene numerische Gesamtzahl |
 | Feuchte/CO₂/Taupunkt | Nein | Numerische Messwerte |
@@ -74,7 +76,7 @@ in aufklappbaren Bereichen untergebracht.
 
 Die Liste kann direkt über die Benutzeroberfläche gepflegt werden; die
 numerischen IDs sind daher nicht von Hand in PHP-Dateien einzutragen.
-Auch Räume mit ausschließlich Licht-, Fenster- oder Klimawerten sind möglich.
+Auch Räume mit ausschließlich Licht-, Fenster-, Präsenz- oder Klimawerten sind möglich.
 Ein Raum mit nur einem Namen und einer optionalen Detailseite ist ebenfalls
 zulässig; ohne Messwerte und ohne Detailseite bleibt lediglich der Raumname
 in der Tabelle sichtbar. Eine nicht zugeordnete Temperatur ist kein Fehler.
@@ -134,6 +136,31 @@ zusätzlich in der Fensterliste vorhanden, gilt deren Invertierungsoption.
 - Ist ein Kontakt nicht lesbar, wird die Darstellung als unvollständig markiert;
   der Raum wird **nicht** fälschlich als vollständig geschlossen angezeigt.
 
+### Präsenzmelder pro Raum
+
+Im Raumdialog kann unter **„Heizung, Fenster, Licht und Präsenz (optional)“**
+eine einzelne Präsenzvariable ausgewählt werden. Zusätzliche Melder lassen
+sich über die Liste **„Präsenzmelder je Raum“** eintragen. Die Gruppe und der
+Raumname müssen dabei zur Raumliste passen. Jeder Melder kann invertiert
+werden, falls sein Wert `true` gerade **keine** Präsenz bedeutet. Dieselbe
+Variablen-ID wird pro Raum nur einmal ausgewertet; bei Doppelbelegung hat die
+separate Liste Vorrang.
+
+- Sobald **mindestens ein** Melder Präsenz signalisiert, zeigt die Kachel
+  „erkannt“ (grün). Bei mehreren Meldern nennt der Hinweistext deren Anzahl.
+- Erst wenn **alle** zugeordneten Melder negativ melden, steht „keine erkannt“
+  (neutral). Ohne zugeordneten Melder erscheint „–“.
+- Fehlt ein Melderwert und ist kein anderer Melder positiv, steht
+  **„unbekannt“**. Bei einer zugleich erkannten Präsenz wird der unvollständige
+  Zustand mit `*` gekennzeichnet.
+- Die optionale Kennzahl **„Räume mit Präsenz“ zählt Räume** mit mindestens
+  einem positiven Melder, nicht die Summe positiver Sensoren.
+
+Die Anzeige ist bewusst **keine gesicherte Aussage über die tatsächliche
+Raumbelegung**. Melderempfindlichkeit und Nachlaufzeiten beeinflussen das
+Signal. Der Raummonitor übernimmt den vorhandenen Variablenzustand und
+realisiert selbst keine Nachlauf- oder Belegungslogik.
+
 ### Betriebsarten und Farben
 
 | Integer (Standard) | Modus | Farbe |
@@ -189,21 +216,22 @@ des Intervalls werden als unplausibel behandelt.
 ## Beispielkonfiguration
 
 Unter [docs/beispielkonfiguration.json](docs/beispielkonfiguration.json) gibt es ein kleines Beispiel.
-Die IDs **12345 bis 12352 sind frei erfundene Platzhalter** und dürfen nicht
+Die IDs **12345 bis 12355 sind frei erfundene Platzhalter** und dürfen nicht
 ungeprüft in einer vorhandenen Symcon-Installation eingesetzt werden.
 
 ## Anzeige / Kachel
 
-Oberhalb stehen sechs Kennzahlen; wenn ein Raum den Automatikmodus verwendet,
-erscheint eine zusätzliche Kennzahl „Automatik“. Darunter folgt die nach Gruppe und Raumname
+Oberhalb stehen sechs Kennzahlen; bei Automatikbetrieb erscheint zusätzlich
+„Automatik“ und bei zugeordneten Präsenzmeldern „Räume mit Präsenz“.
+Darunter folgt die nach Gruppe und Raumname
 sortierte Tabelle. **Standardmäßig ist die automatische Spaltenauswahl aktiv:**
 Nur der Raumname ist immer sichtbar. Isttemperatur, Solltemperatur, Licht,
-Betriebsart, Fenster und Ventil erscheinen nur, wenn mindestens ein Raum eine
+Betriebsart, Fenster, Präsenz und Ventil erscheinen nur, wenn mindestens ein Raum eine
 passende Variable verwendet. Die Spalten gelten einheitlich für alle Etagen;
 ein Raum ohne Zuordnung zeigt darin „–“.
 
 Die Option **„Tabellenspalten automatisch nach verwendeten Variablen anzeigen“**
-kann deaktiviert werden, um wieder alle sieben Grundspalten anzuzeigen.
+kann deaktiviert werden, um alle Grundspalten einschließlich Präsenz anzuzeigen.
 Zusatzspalten für Feuchte, CO₂, Taupunkt und Heizen/Kühlen benötigen weiterhin
 die separate Freigabe **„Optionale Klima-Spalten anzeigen“**. Mit aktivierter
 Automatik erscheinen auch diese Zusatzspalten jeweils nur bei tatsächlicher
@@ -233,7 +261,7 @@ Die Funktionen benutzen ausschließlich die vorhandenen Symcon-Variablen.
 | --- | --- |
 | 102 | Alles betriebsbereit |
 | 104 | Noch keine Räume eingerichtet |
-| 201 | Fehlerhafte Raum-/Licht-/Fensterliste, doppelte Betriebsartwerte oder ungültige Temperaturgrenzen |
+| 201 | Fehlerhafte Raum-/Licht-/Fenster-/Präsenzliste, doppelte Betriebsartwerte oder ungültige Temperaturgrenzen |
 | 202 | Konfigurierter Messwert fehlt, ist nicht lesbar oder die Ist-/Solltemperatur liegt außerhalb der Plausibilitätsgrenzen |
 
 Details zu fehlenden Variablen erscheinen im **Debug der Raummonitor-Instanz**.
@@ -251,6 +279,7 @@ php tests/module_smoke.php
 node tests/theme_test.js    # optionaler Test der Design-Erkennung
 node tests/navigation_test.js    # optionaler Test des Klickverhaltens
 node tests/columns_test.js    # optionaler Test der dynamischen Spalten
+node tests/presence_test.js    # optionaler Test der Präsenzanzeige
 ```
 
 Alle PHP-Dateien können zusätzlich mit `php -l` und alle JSON-Dateien mit
@@ -279,7 +308,8 @@ IPSymcon-Raummonitor/
     ├── module_smoke.php
     ├── theme_test.js
     ├── navigation_test.js
-    └── columns_test.js
+    ├── columns_test.js
+    └── presence_test.js
 ```
 
 ## Herkunft und Lizenz
